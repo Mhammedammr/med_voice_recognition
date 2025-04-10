@@ -58,7 +58,7 @@ def upload():
         # Extract data from the response
         raw_text = response_data["raw_text"]
         arabic_text = response_data["arabic_text"]
-        translation = response_data("translation_text")
+        translation = response_data["translation_text"]
         json_data = response_data["json_data"]
         reasoning = response_data["reasoning"]
         voice_time = response_data["voice_processing_time"]
