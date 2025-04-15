@@ -1,0 +1,177 @@
+# src/services/audio_service.py - Core audio processing logic
+from flask import current_app, jsonify
+from src.services.file_service import FileService
+from src.services.speech_service import SpeechService
+from src.services.llm_service import LLMService
+from src.services.audio_preprocessing import AudioPreprocessingService
+from src.utils.text_parser import parse_refined_text_voice2
+import logging
+import time
+import os
+import concurrent.futures
+from pydub import AudioSegment
+
+logger = logging.getLogger(__name__)
+
+class AudioService:
+    """Service handling audio processing workflows."""
+    
+    @staticmethod
+    def process_batch(audio_file, language, model, conversational_mode):
+        """Process audio in batch mode (non-streaming)."""
+        process_start = time.time()
+        file_path = None
+        processed_file_path = None
+        
+        try:
+            # Save file
+            file_path = FileService.save_file(audio_file, current_app.config["UPLOAD_FOLDER"])
+            logger.info(f"File saved: {file_path}")
+            
+            # Step 1: Preprocess audio
+            preprocess_start = time.time()
+            processed_file_path = AudioPreprocessingService.preprocess_audio(file_path)
+            preprocess_time = time.time() - preprocess_start
+            
+            # Step 2: Transcribe audio
+            voice_start = time.time()
+            raw_text = AudioService._process_audio_parallel(
+                processed_file_path, 
+                current_app.config["GROQ_API_KEY"],
+                language
+            )
+            voice_time = time.time() - voice_start
+            
+            # Step 3: Refine transcription
+            refine_start = time.time()
+            refined_text = LLMService.refine_ar_transcription(
+                raw_text,
+                current_app.config["FIREWORKS_API_KEY"],
+                model,
+                conversational_mode
+            )
+            
+            # Step 4: Translate to English
+            translated_text = LLMService.translate_to_eng(
+                refined_text,
+                current_app.config["FIREWORKS_API_KEY"],
+                model,
+                conversational_mode
+            )
+            
+            # Step 5: Extract features
+            features_with_reasoning = LLMService.extract_features(
+                translated_text,
+                current_app.config["FIREWORKS_API_KEY"],
+                model,
+                conversational_mode
+            )
+            llm_time = time.time() - refine_start
+            
+            # Parse features
+            json_data, reasoning = parse_refined_text_voice2(features_with_reasoning)
+            
+            
+            # Return results
+            return jsonify({
+                "raw_text": raw_text,
+                "arabic_text": refined_text, 
+                "translation_text": translated_text,
+                "json_data": json_data,
+                "reasoning": reasoning,
+                "preprocessing_time": preprocess_time,
+                "voice_processing_time": voice_time,
+                "llm_processing_time": llm_time,
+                "total_time": time.time() - process_start
+            })
+            
+        except Exception as e:
+            logger.error(f"Error in batch processing: {str(e)}", exc_info=True)
+                
+            # Cleanup files
+            AudioService._cleanup_files(file_path, processed_file_path)
+            
+            raise
+    
+    @staticmethod
+    def _process_audio_parallel(file_path, api_key, language, max_workers=3):
+        """Process audio in parallel chunks."""
+        chunks = AudioService._split_audio(file_path)
+        results = [None] * len(chunks)
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [(i, executor.submit(
+                AudioService._process_chunk, chunk, api_key, language
+            )) for i, chunk in enumerate(chunks)]
+            
+            for i, future in futures:
+                try:
+                    results[i] = future.result()
+                except Exception as e:
+                    logger.error(f"Chunk {i} failed: {str(e)}")
+                    results[i] = ""
+        
+        return " ".join(filter(None, results))
+    
+    @staticmethod
+    def _split_audio(file_path, chunk_duration_ms=20000):
+        """Split audio file into smaller chunks for parallel processing"""
+        try:
+            logger.info(f"Splitting audio file {file_path} into chunks of {chunk_duration_ms}ms")
+            audio = AudioSegment.from_file(file_path)
+            total_duration = len(audio)
+            chunks = []
+            
+            # Create chunks of specified duration
+            for i in range(0, total_duration, chunk_duration_ms):
+                end = min(i + chunk_duration_ms, total_duration)
+                chunk = audio[i:end]
+                
+                # Save chunk to temporary file
+                chunk_path = f"{file_path}_chunk_{i}.wav"
+                chunk.export(chunk_path, format="wav")
+                chunks.append(chunk_path)
+                
+            logger.info(f"Created {len(chunks)} audio chunks")
+            return chunks
+        except Exception as e:
+            logger.error(f"Error splitting audio: {str(e)}")
+            raise
+    
+    @staticmethod
+    def _process_chunk(chunk_path, api_key, language, preprocess = True):
+        """Process a single audio chunk with Whisper"""
+        try:
+            logger.info(f"Processing audio chunk: {chunk_path}")
+            if preprocess:
+                logger.info(f"Preprocessing chunk {chunk_path}")
+                processed_chunk_path = AudioPreprocessingService.preprocess_audio(chunk_path)
+                text = SpeechService.transcribe_audio(processed_chunk_path, api_key, language, preprocess=False)
+                if processed_chunk_path != chunk_path and os.path.exists(processed_chunk_path):
+                    os.remove(processed_chunk_path)
+                    logger.info(f"Removed preprocessed chunk {processed_chunk_path}")
+            else:
+                text = SpeechService.transcribe_audio(chunk_path, api_key, language, preprocess=False)
+                
+            # Clean up chunk file
+            if os.path.exists(chunk_path):
+                os.remove(chunk_path)
+                logger.info(f"Removed chunk {chunk_path}")
+                
+            return text
+        except Exception as e:
+            logger.error(f"Error processing chunk {chunk_path}: {str(e)}")
+            if os.path.exists(chunk_path):
+                os.remove(chunk_path)
+                logger.info(f"Removed chunk {chunk_path} after error")
+            return ""
+    
+    
+    @staticmethod
+    def _cleanup_files(file_path, processed_file_path):
+        """Clean up temporary files."""
+        if file_path and os.path.exists(file_path):
+            os.remove(file_path)
+            
+        if processed_file_path and processed_file_path != file_path and os.path.exists(processed_file_path):
+            os.remove(processed_file_path)

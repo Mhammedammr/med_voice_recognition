@@ -1,0 +1,4 @@
+2025-04-07 15:50:26,404 - INFO - [68410] - root - Initializing application
+2025-04-07 15:50:26,404 - INFO - [68410] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-07 15:50:26,464 - INFO - [68410] - root - Database setup successful
+2025-04-07 15:50:26,465 - INFO - [68410] - root - Starting Flask server on port 8586

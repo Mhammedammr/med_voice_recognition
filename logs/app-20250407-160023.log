@@ -1,0 +1,106 @@
+2025-04-07 16:00:23,550 - INFO - [73259] - root - Initializing application
+2025-04-07 16:00:23,550 - INFO - [73259] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-07 16:00:24,054 - INFO - [73259] - root - Database setup successful
+2025-04-07 16:00:24,055 - INFO - [73259] - root - Starting Flask server on port 8586
+2025-04-07 16:00:24,128 - WARNING - [73259] - werkzeug -  * Debugger is active!
+2025-04-07 16:00:24,138 - INFO - [73259] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-07 16:00:24,991 - INFO - [73259] - root - Received upload request
+2025-04-07 16:00:24,999 - INFO - [73259] - root - Upload parameters: language=ar, streaming=False
+2025-04-07 16:00:25,000 - INFO - [73259] - root - File saved to uploads/9e49fb5d20fb4e038e52a647d01681c8.m4a
+2025-04-07 16:00:25,001 - INFO - [73259] - root - Starting batch processing mode
+2025-04-07 16:00:25,001 - INFO - [73259] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-07 16:00:25,038 - INFO - [73259] - root - Database setup successful
+2025-04-07 16:00:25,038 - INFO - [73259] - root - Database session initialized
+2025-04-07 16:00:25,038 - INFO - [73259] - root - Starting audio preprocessing
+2025-04-07 16:00:27,634 - INFO - [73259] - root - Audio preprocessing completed in 2.5963 seconds
+2025-04-07 16:00:27,635 - INFO - [73259] - root - Starting audio transcription in ar
+2025-04-07 16:00:27,635 - INFO - [73259] - root - Starting parallel audio processing with 3 workers
+2025-04-07 16:00:27,635 - INFO - [73259] - root - Splitting audio file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_a5j_zmg/processed_audio.wav into chunks of 20000ms
+2025-04-07 16:00:27,641 - INFO - [73259] - root - Created 2 audio chunks
+2025-04-07 16:00:27,643 - INFO - [73259] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_a5j_zmg/processed_audio.wav_chunk_0.wav
+2025-04-07 16:00:27,643 - INFO - [73259] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_a5j_zmg/processed_audio.wav_chunk_20000.wav
+2025-04-07 16:00:35,718 - INFO - [73259] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-07 16:00:35,724 - INFO - [73259] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_a5j_zmg/processed_audio.wav_chunk_20000.wav
+2025-04-07 16:00:38,486 - INFO - [73259] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-07 16:00:38,491 - INFO - [73259] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_a5j_zmg/processed_audio.wav_chunk_0.wav
+2025-04-07 16:00:38,491 - INFO - [73259] - root - Chunk 0 processing completed
+2025-04-07 16:00:38,492 - INFO - [73259] - root - Chunk 1 processing completed
+2025-04-07 16:00:38,492 - INFO - [73259] - root - Parallel processing completed, combined text length: 460
+2025-04-07 16:00:38,493 - INFO - [73259] - root - Audio transcription completed in 10.8582 seconds, text length: 460
+2025-04-07 16:00:38,493 - INFO - [73259] - root - Starting LLM processing
+2025-04-07 16:00:52,770 - INFO - [73259] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-07 16:00:52,782 - INFO - [73259] - root - LLM processing completed in 14.2889 seconds
+2025-04-07 16:00:52,782 - INFO - [73259] - root - Parsing refined text
+2025-04-07 16:00:52,784 - INFO - [73259] - root - Total processing completed in 27.7456 seconds
+2025-04-07 16:00:52,787 - INFO - [73259] - root - Removed processed file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_a5j_zmg/processed_audio.wav
+2025-04-07 16:00:52,787 - INFO - [73259] - root - Saving results to database
+2025-04-07 16:00:52,825 - INFO - [73259] - root - Results saved to database with ID 125
+2025-04-07 16:00:52,826 - INFO - [73259] - root - Database session closed
+2025-04-07 16:00:52,827 - INFO - [73259] - werkzeug - 127.0.0.1 - - [07/Apr/2025 16:00:52] "POST /upload HTTP/1.1" 200 -
+2025-04-07 16:01:05,219 - INFO - [73259] - root - Received upload request
+2025-04-07 16:01:05,223 - INFO - [73259] - root - Upload parameters: language=ar, streaming=False
+2025-04-07 16:01:05,225 - INFO - [73259] - root - File saved to uploads/8c2e5b65e5894b02ad8a0b14abdc2544.m4a
+2025-04-07 16:01:05,225 - INFO - [73259] - root - Starting batch processing mode
+2025-04-07 16:01:05,225 - INFO - [73259] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-07 16:01:05,338 - INFO - [73259] - root - Database setup successful
+2025-04-07 16:01:05,339 - INFO - [73259] - root - Database session initialized
+2025-04-07 16:01:05,339 - INFO - [73259] - root - Starting audio preprocessing
+2025-04-07 16:01:05,903 - INFO - [73259] - root - Audio preprocessing completed in 0.5638 seconds
+2025-04-07 16:01:05,903 - INFO - [73259] - root - Starting audio transcription in ar
+2025-04-07 16:01:05,903 - INFO - [73259] - root - Starting parallel audio processing with 3 workers
+2025-04-07 16:01:05,903 - INFO - [73259] - root - Splitting audio file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpxm8yssch/processed_audio.wav into chunks of 20000ms
+2025-04-07 16:01:05,916 - INFO - [73259] - root - Created 2 audio chunks
+2025-04-07 16:01:05,917 - INFO - [73259] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpxm8yssch/processed_audio.wav_chunk_0.wav
+2025-04-07 16:01:05,917 - INFO - [73259] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpxm8yssch/processed_audio.wav_chunk_20000.wav
+2025-04-07 16:01:10,075 - INFO - [73259] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-07 16:01:10,079 - INFO - [73259] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpxm8yssch/processed_audio.wav_chunk_20000.wav
+2025-04-07 16:01:12,230 - INFO - [73259] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-07 16:01:12,234 - INFO - [73259] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpxm8yssch/processed_audio.wav_chunk_0.wav
+2025-04-07 16:01:12,235 - INFO - [73259] - root - Chunk 0 processing completed
+2025-04-07 16:01:12,235 - INFO - [73259] - root - Chunk 1 processing completed
+2025-04-07 16:01:12,235 - INFO - [73259] - root - Parallel processing completed, combined text length: 394
+2025-04-07 16:01:12,236 - INFO - [73259] - root - Audio transcription completed in 6.3331 seconds, text length: 394
+2025-04-07 16:01:12,236 - INFO - [73259] - root - Starting LLM processing
+2025-04-07 16:01:23,330 - INFO - [73259] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-07 16:01:23,369 - INFO - [73259] - root - LLM processing completed in 11.1327 seconds
+2025-04-07 16:01:23,369 - INFO - [73259] - root - Parsing refined text
+2025-04-07 16:01:23,370 - INFO - [73259] - root - Total processing completed in 18.0309 seconds
+2025-04-07 16:01:23,376 - INFO - [73259] - root - Removed processed file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpxm8yssch/processed_audio.wav
+2025-04-07 16:01:23,376 - INFO - [73259] - root - Saving results to database
+2025-04-07 16:01:23,389 - INFO - [73259] - root - Results saved to database with ID 126
+2025-04-07 16:01:23,390 - INFO - [73259] - root - Database session closed
+2025-04-07 16:01:23,390 - INFO - [73259] - werkzeug - 127.0.0.1 - - [07/Apr/2025 16:01:23] "POST /upload HTTP/1.1" 200 -
+2025-04-07 16:20:05,419 - INFO - [73259] - root - Received upload request
+2025-04-07 16:20:05,425 - INFO - [73259] - root - Upload parameters: language=ar, streaming=False
+2025-04-07 16:20:05,426 - INFO - [73259] - root - File saved to uploads/1aa9c9c980b7406ba3f44dfe7aa14131.m4a
+2025-04-07 16:20:05,427 - INFO - [73259] - root - Starting batch processing mode
+2025-04-07 16:20:05,427 - INFO - [73259] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-07 16:20:05,598 - INFO - [73259] - root - Database setup successful
+2025-04-07 16:20:05,599 - INFO - [73259] - root - Database session initialized
+2025-04-07 16:20:05,599 - INFO - [73259] - root - Starting audio preprocessing
+2025-04-07 16:20:06,735 - INFO - [73259] - root - Audio preprocessing completed in 1.1364 seconds
+2025-04-07 16:20:06,736 - INFO - [73259] - root - Starting audio transcription in ar
+2025-04-07 16:20:06,736 - INFO - [73259] - root - Starting parallel audio processing with 3 workers
+2025-04-07 16:20:06,736 - INFO - [73259] - root - Splitting audio file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpglfr63mz/processed_audio.wav into chunks of 20000ms
+2025-04-07 16:20:06,750 - INFO - [73259] - root - Created 2 audio chunks
+2025-04-07 16:20:06,751 - INFO - [73259] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpglfr63mz/processed_audio.wav_chunk_0.wav
+2025-04-07 16:20:06,751 - INFO - [73259] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpglfr63mz/processed_audio.wav_chunk_20000.wav
+2025-04-07 16:20:15,108 - INFO - [73259] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-07 16:20:15,111 - INFO - [73259] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpglfr63mz/processed_audio.wav_chunk_20000.wav
+2025-04-07 16:20:16,553 - INFO - [73259] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-07 16:20:16,556 - INFO - [73259] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpglfr63mz/processed_audio.wav_chunk_0.wav
+2025-04-07 16:20:16,556 - INFO - [73259] - root - Chunk 0 processing completed
+2025-04-07 16:20:16,556 - INFO - [73259] - root - Chunk 1 processing completed
+2025-04-07 16:20:16,556 - INFO - [73259] - root - Parallel processing completed, combined text length: 339
+2025-04-07 16:20:16,557 - INFO - [73259] - root - Audio transcription completed in 9.8208 seconds, text length: 339
+2025-04-07 16:20:16,557 - INFO - [73259] - root - Starting LLM processing
+2025-04-07 16:20:27,624 - INFO - [73259] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-07 16:20:27,631 - INFO - [73259] - root - LLM processing completed in 11.0740 seconds
+2025-04-07 16:20:27,631 - INFO - [73259] - root - Parsing refined text
+2025-04-07 16:20:27,632 - INFO - [73259] - root - Total processing completed in 22.0328 seconds
+2025-04-07 16:20:27,637 - INFO - [73259] - root - Removed processed file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpglfr63mz/processed_audio.wav
+2025-04-07 16:20:27,637 - INFO - [73259] - root - Saving results to database
+2025-04-07 16:20:27,706 - INFO - [73259] - root - Results saved to database with ID 127
+2025-04-07 16:20:27,707 - INFO - [73259] - root - Database session closed
+2025-04-07 16:20:27,708 - INFO - [73259] - werkzeug - 127.0.0.1 - - [07/Apr/2025 16:20:27] "POST /upload HTTP/1.1" 200 -
+2025-04-07 16:21:04,178 - INFO - [73259] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py', reloading

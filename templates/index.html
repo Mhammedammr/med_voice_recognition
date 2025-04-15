@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Transcription</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Audio Transcription Analysis</h1>
+
+        <!-- Upload Form -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <form id="analyzeForm" method="POST" action="/upload" enctype="multipart/form-data">
+                <!-- Form Selection Dropdown -->
+                <div class="mb-4">
+                    <label for="formSelector" class="block text-sm font-medium text-gray-700 mb-2">Select Clinical Form:</label>
+                    <select id="formSelector" name="formName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Select a form --</option>
+                        <!-- Form options will be populated by JavaScript -->
+                    </select>
+                    <input type="hidden" id="formJsonFormat" name="formJsonFormat">
+                    <p id="formError" class="hidden mt-2 text-sm text-red-600">Please select a form.</p>
+                </div>
+
+                <!-- Language Selection -->
+                <div class="mb-4">
+                    <label for="languageSelector" class="block text-sm font-medium text-gray-700 mb-2">Audio Language:</label>
+                    <div class="flex gap-4">
+                        <div class="flex items-center">
+                            <input type="radio" id="english" name="language" value="en" checked class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <label for="english" class="ml-2 block text-sm text-gray-700">English</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" id="arabic" name="language" value="ar" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <label for="arabic" class="ml-2 block text-sm text-gray-700">Arabic</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Upload -->
+                <div class="mb-4">
+                    <label for="audioFile" class="block text-sm font-medium text-gray-700 mb-2">Audio File:</label>
+                    <div class="flex items-center">
+                        <label for="audioFile" class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                            <span id="fileLabel">Upload audio file</span>
+                        </label>
+                        <input id="audioFile" name="audio" type="file" accept="audio/*" class="sr-only">
+                    </div>
+                    <p id="audioError" class="hidden mt-2 text-sm text-red-600">Please upload an audio file.</p>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end">
+                    <button id="analyzeButton" type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Analyze
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="statusMessage" class="hidden mb-8 p-4 rounded-lg"></div>
+
+        <!-- Results Section -->
+        <div id="results" class="hidden space-y-8">
+            <!-- Raw Transcription -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Raw Transcription</h2>
+                <div id="rawText" class="bg-gray-50 p-4 rounded-lg text-gray-700 whitespace-pre-wrap"></div>
+            </div>
+
+            <!-- Refined Text -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Refined Text</h2>
+                <div id="refinedText" class="bg-gray-50 p-4 rounded-lg text-gray-700 whitespace-pre-wrap"></div>
+            </div>
+
+            <!-- Reasoning Section -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Reasoning</h2>
+                <div id="reasoningText" class="bg-gray-50 p-4 rounded-lg text-gray-700 whitespace-pre-wrap"></div>
+            </div>
+
+            <!-- JSON Data Table -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Extracted Features</h2>
+                <div class="overflow-x-auto">
+                    <table id="jsonTable" class="min-w-full table-auto">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Feature</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('analyzeForm');
+            const formSelector = document.getElementById('formSelector');
+            const formJsonFormat = document.getElementById('formJsonFormat');
+            const audioFile = document.getElementById('audioFile');
+            const analyzeButton = document.getElementById('analyzeButton');
+            const fileLabel = document.getElementById('fileLabel');
+            const formError = document.getElementById('formError');
+            const audioError = document.getElementById('audioError');
+            
+            // Load form data from the server when the page loads
+            fetchFormList();
+            
+            // Function to fetch the list of available forms
+            async function fetchFormList() {
+                try {
+                    const response = await fetch('/get_forms');
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const forms = await response.json();
+                    populateFormDropdown(forms);
+                } catch (error) {
+                    console.error('Error fetching forms:', error);
+                    showStatus(`Error loading forms: ${error.message}`, 'error');
+                }
+            }
+            
+            // Function to populate the form dropdown
+            function populateFormDropdown(forms) {
+                // Clear any existing options except the default
+                while (formSelector.options.length > 1) {
+                    formSelector.remove(1);
+                }
+                
+                // Add new options
+                forms.forEach(form => {
+                    const option = document.createElement('option');
+                    option.value = form.name;
+                    option.textContent = form.name;
+                    option.dataset.jsonFormat = form.json_format;
+                    formSelector.appendChild(option);
+                });
+            }
+            
+            // When a form is selected, store its JSON format in the hidden input
+            formSelector.addEventListener('change', function() {
+                const selectedOption = formSelector.options[formSelector.selectedIndex];
+                if (selectedOption.value) {
+                    formJsonFormat.value = selectedOption.dataset.jsonFormat;
+                    formError.classList.add('hidden');
+                } else {
+                    formJsonFormat.value = '';
+                }
+                validateForm();
+            });
+            
+            // Function to validate form inputs
+            function validateForm() {
+                const hasForm = formSelector.value !== '';
+                const hasAudio = audioFile.files.length > 0;
+                
+                if (hasForm) {
+                    formError.classList.add('hidden');
+                } else {
+                    formError.classList.remove('hidden');
+                }
+                
+                if (hasAudio) {
+                    audioError.classList.add('hidden');
+                } else {
+                    audioError.classList.remove('hidden');
+                }
+                
+                analyzeButton.disabled = !(hasForm && hasAudio);
+            }
+            
+            // Update file label when a file is selected
+            audioFile.addEventListener('change', function() {
+                if (audioFile.files.length > 0) {
+                    fileLabel.textContent = audioFile.files[0].name;
+                } else {
+                    fileLabel.textContent = 'Upload audio file';
+                }
+                validateForm();
+            });
+            
+            // Handle form submission
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const hasForm = formSelector.value !== '';
+                const hasAudio = audioFile.files.length > 0;
+                
+                if (!hasForm) {
+                    formError.classList.remove('hidden');
+                }
+                
+                if (!hasAudio) {
+                    audioError.classList.remove('hidden');
+                }
+                
+                if (!hasForm || !hasAudio) {
+                    return false;
+                }
+                
+                showStatus('Processing your request...');
+                
+                const formData = new FormData(form);
+                
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    showStatus('Analysis completed successfully!', 'success');
+                    displayResults(data);
+                } catch (error) {
+                    console.error('Error:', error);
+                    showStatus(`Error: ${error.message}`, 'error');
+                }
+            });
+            
+            // Initial validation
+            validateForm();
+        });
+        
+        // Function to format any value type for display
+        function formatValue(value) {
+            if (value === null || value === undefined) {
+                return '-';
+            }
+            if (Array.isArray(value)) {
+                return value.join(', ');
+            }
+            if (typeof value === 'object') {
+                return Object.entries(value)
+                    .map(([k, v]) => `${k}: ${formatValue(v)}`)
+                    .join(', ');
+            }
+            return String(value);
+        }
+
+        // Show status message
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `mb-8 p-4 rounded-lg ${
+                type === 'error' ? 'bg-red-100 text-red-700' :
+                type === 'success' ? 'bg-green-100 text-green-700' :
+                'bg-blue-100 text-blue-700'
+            }`;
+            statusDiv.classList.remove('hidden');
+        }
+
+        // Display the results
+        function displayResults(data) {
+            // Show results section
+            document.getElementById('results').classList.remove('hidden');
+            
+            // Display raw text
+            document.getElementById('rawText').textContent = data.raw_text || '';
+            
+            // Display refined text
+            document.getElementById('refinedText').textContent = data.refined_text || '';
+            
+            // Display reasoning text
+            document.getElementById('reasoningText').textContent = data.reasoning || '';
+            
+            // Display JSON data in table
+            const tableBody = document.querySelector('#jsonTable tbody');
+            tableBody.innerHTML = ''; // Clear existing content
+            
+            if (data.json_data && typeof data.json_data === 'object') {
+                Object.entries(data.json_data).forEach(([key, value]) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${key}</td>
+                        <td class="px-6 py-4 whitespace-normal text-sm text-gray-500">${formatValue(value)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

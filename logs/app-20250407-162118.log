@@ -1,0 +1,9 @@
+2025-04-07 16:21:18,469 - INFO - [76177] - root - Initializing application
+2025-04-07 16:21:18,469 - INFO - [76177] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-07 16:21:18,547 - INFO - [76177] - root - Database setup successful
+2025-04-07 16:21:18,547 - INFO - [76177] - root - Starting Flask server on port 8586
+2025-04-07 16:21:18,577 - INFO - [76177] - werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8586
+2025-04-07 16:21:18,577 - INFO - [76177] - werkzeug - [33mPress CTRL+C to quit[0m
+2025-04-07 16:21:18,578 - INFO - [76177] - werkzeug -  * Restarting with stat
+2025-04-07 16:33:02,748 - INFO - [76177] - werkzeug -  * Restarting with stat

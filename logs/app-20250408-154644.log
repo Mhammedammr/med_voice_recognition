@@ -1,0 +1,7 @@
+2025-04-08 15:46:44,527 - INFO - [52450] - root - Initializing application
+2025-04-08 15:46:44,527 - INFO - [52450] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-08 15:46:44,591 - INFO - [52450] - root - Database setup successful
+2025-04-08 15:46:44,591 - INFO - [52450] - root - Starting Flask server on port 8586
+2025-04-08 15:46:44,625 - WARNING - [52450] - werkzeug -  * Debugger is active!
+2025-04-08 15:46:44,635 - INFO - [52450] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-08 15:50:38,096 - INFO - [52450] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/text_parser.py', reloading

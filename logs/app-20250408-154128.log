@@ -1,0 +1,22 @@
+2025-04-08 15:41:28,907 - INFO - [49964] - root - Initializing application
+2025-04-08 15:41:28,907 - INFO - [49964] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-08 15:41:29,136 - INFO - [49964] - root - Database setup successful
+2025-04-08 15:41:29,136 - INFO - [49964] - root - Starting Flask server on port 8586
+2025-04-08 15:41:29,188 - INFO - [49964] - werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8586
+2025-04-08 15:41:29,188 - INFO - [49964] - werkzeug - [33mPress CTRL+C to quit[0m
+2025-04-08 15:41:29,189 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:42:49,930 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:42:53,863 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:43:00,090 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:43:04,299 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:43:10,685 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:44:44,678 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:45:14,889 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:46:29,254 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:46:42,639 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:50:38,626 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:50:46,740 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:50:59,822 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:54:19,974 - INFO - [49964] - werkzeug -  * Restarting with stat
+2025-04-08 15:54:30,803 - INFO - [49964] - werkzeug -  * Restarting with stat

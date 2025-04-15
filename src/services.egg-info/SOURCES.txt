@@ -1,0 +1,9 @@
+README.md
+pyproject.toml
+setup.cfg
+setup.py
+src/services.egg-info/PKG-INFO
+src/services.egg-info/SOURCES.txt
+src/services.egg-info/dependency_links.txt
+src/services.egg-info/requires.txt
+src/services.egg-info/top_level.txt
