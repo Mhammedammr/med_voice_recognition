@@ -1,0 +1,4 @@
+2025-04-14 16:55:27,359 - WARNING - [73716] - werkzeug -  * Debugger is active!
+2025-04-14 16:55:27,366 - INFO - [73716] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-14 16:55:30,471 - INFO - [73716] - werkzeug - 127.0.0.1 - - [14/Apr/2025 16:55:30] "[33mGET / HTTP/1.1[0m" 404 -
+2025-04-14 17:01:41,774 - INFO - [73716] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/api/__init__.py', reloading

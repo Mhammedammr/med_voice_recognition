@@ -5,7 +5,11 @@ build-backend= "setuptools.build_meta"
 [project]
 name = "src"
 version = "0.0.1"
+<<<<<<< HEAD
 description = "A quick flask demo to medical voice recognition project"
+=======
+description = "A quick falsk demo for med voice recognition project"
+>>>>>>> 78d71f9 (optmizing project strcture)
 readme = "README.md"
 authors = [
     {name = "Muhammed Amr", email = "muhammedamr57@gmail.com"}

@@ -1,0 +1,24 @@
+2025-04-14 18:15:30,304 - INFO - [99613] - root - Initializing application
+2025-04-14 18:15:30,304 - INFO - [99613] - root - Starting Flask server on port 8586
+2025-04-14 18:15:30,325 - WARNING - [99613] - werkzeug -  * Debugger is active!
+2025-04-14 18:15:30,332 - INFO - [99613] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-14 18:15:33,558 - INFO - [99613] - root - Received upload request
+2025-04-14 18:15:33,563 - INFO - [99613] - root - Upload parameters: language=ar ,conversational mode=True
+2025-04-14 18:15:33,564 - INFO - [99613] - root - File saved to uploads/781902470b0840459c2dc05b3a0e878c.m4a
+2025-04-14 18:15:33,565 - INFO - [99613] - root - Starting batch processing mode
+2025-04-14 18:15:33,565 - INFO - [99613] - src.services.audio_service - File saved: uploads/781902470b0840459c2dc05b3a0e878c.m4a
+2025-04-14 18:15:36,166 - INFO - [99613] - src.services.audio_service - Splitting audio file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpxa0gmlev/processed_audio.wav into chunks of 100% of total duration
+2025-04-14 18:15:36,255 - INFO - [99613] - src.services.audio_service - Created 1 audio chunks (each 100% of total duration)
+2025-04-14 18:15:36,256 - INFO - [99613] - src.services.audio_service - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpxa0gmlev/processed_audio.wav_chunk_0.wav
+2025-04-14 18:15:36,256 - INFO - [99613] - src.services.audio_service - Preprocessing chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpxa0gmlev/processed_audio.wav_chunk_0.wav
+2025-04-14 18:15:44,180 - INFO - [99613] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-14 18:15:44,185 - INFO - [99613] - src.services.audio_service - Removed preprocessed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpem7eehy2/processed_audio.wav
+2025-04-14 18:15:44,185 - INFO - [99613] - src.services.audio_service - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpxa0gmlev/processed_audio.wav_chunk_0.wav
+2025-04-14 18:15:44,187 - INFO - [99613] - root - Calling LLM API with model: accounts/fireworks/models/llama4-maverick-instruct-basic
+2025-04-14 18:15:47,222 - INFO - [99613] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 18:15:47,232 - INFO - [99613] - root - Calling LLM API with model: accounts/fireworks/models/llama4-maverick-instruct-basic
+2025-04-14 18:15:49,270 - INFO - [99613] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 18:15:49,276 - INFO - [99613] - root - Calling LLM API with model: accounts/fireworks/models/llama4-maverick-instruct-basic
+2025-04-14 18:15:53,525 - INFO - [99613] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 18:15:53,546 - INFO - [99613] - werkzeug - 127.0.0.1 - - [14/Apr/2025 18:15:53] "POST /upload HTTP/1.1" 200 -
+2025-04-14 18:19:46,385 - INFO - [99613] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/llm_service.py', reloading

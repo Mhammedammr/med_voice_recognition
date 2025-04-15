@@ -1,0 +1,16 @@
+2025-04-14 18:15:07,503 - INFO - [99483] - root - Initializing application
+2025-04-14 18:15:07,503 - INFO - [99483] - root - Starting Flask server on port 8586
+2025-04-14 18:15:07,523 - WARNING - [99483] - werkzeug -  * Debugger is active!
+2025-04-14 18:15:07,530 - INFO - [99483] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-14 18:15:13,170 - INFO - [99483] - root - Received upload request
+2025-04-14 18:15:13,173 - INFO - [99483] - root - Upload parameters: language=ar ,conversational mode=True
+2025-04-14 18:15:13,174 - INFO - [99483] - root - File saved to uploads/c9637cc7ce3d4168abced0d46c41489d.m4a
+2025-04-14 18:15:13,174 - INFO - [99483] - root - Starting batch processing mode
+2025-04-14 18:15:13,175 - ERROR - [99483] - root - Error in batch processing: AudioService.process_batch() takes 4 positional arguments but 5 were given
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py", line 84, in upload
+    response = AudioService.process_batch(file_path, language, model, conversational_mode, logger)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: AudioService.process_batch() takes 4 positional arguments but 5 were given
+2025-04-14 18:15:13,176 - INFO - [99483] - werkzeug - 127.0.0.1 - - [14/Apr/2025 18:15:13] "[35m[1mPOST /upload HTTP/1.1[0m" 500 -
+2025-04-14 18:15:28,223 - INFO - [99483] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py', reloading

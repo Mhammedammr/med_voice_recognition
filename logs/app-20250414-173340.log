@@ -1,0 +1,5 @@
+2025-04-14 17:33:40,868 - INFO - [86357] - root - Initializing application
+2025-04-14 17:33:40,868 - INFO - [86357] - root - Starting Flask server on port 8586
+2025-04-14 17:33:40,893 - WARNING - [86357] - werkzeug -  * Debugger is active!
+2025-04-14 17:33:40,902 - INFO - [86357] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-14 17:33:42,099 - INFO - [86357] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/llm_service.py', reloading

@@ -4,131 +4,211 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audio Transcription</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <!-- Replace Tailwind with Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 min-h-screen p-8">
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Audio Transcription Analysis</h1>
+<body class="bg-light min-vh-100 p-4">
+    <div class="container">
+        <h1 class="text-center mb-4">Audio Transcription Analysis</h1>
 
         <!-- Upload Form -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <form id="analyzeForm" method="POST" action="/upload" enctype="multipart/form-data">
-                <!-- Form Selection Dropdown -->
-                <div class="mb-4">
-                    <label for="formSelector" class="block text-sm font-medium text-gray-700 mb-2">Select Clinical Form:</label>
-                    <select id="formSelector" name="formName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">-- Select a form --</option>
-                        <!-- Form options will be populated by JavaScript -->
-                    </select>
-                    <input type="hidden" id="formJsonFormat" name="formJsonFormat">
-                    <p id="formError" class="hidden mt-2 text-sm text-red-600">Please select a form.</p>
-                </div>
-
-                <!-- Language Selection -->
-                <div class="mb-4">
-                    <label for="languageSelector" class="block text-sm font-medium text-gray-700 mb-2">Audio Language:</label>
-                    <div class="flex gap-4">
-                        <div class="flex items-center">
-                            <input type="radio" id="english" name="language" value="en" checked class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                            <label for="english" class="ml-2 block text-sm text-gray-700">English</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="radio" id="arabic" name="language" value="ar" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                            <label for="arabic" class="ml-2 block text-sm text-gray-700">Arabic</label>
-                        </div>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <form id="analyzeForm" method="POST" action="/upload" enctype="multipart/form-data">
+                    <!-- Form Selection Dropdown -->
+                    <div class="mb-3">
+                        <label for="formSelector" class="form-label">Select Clinical Form:</label>
+                        <select id="formSelector" name="formName" class="form-select">
+                            <option value="">-- Select a form --</option>
+                            <!-- Form options will be populated by JavaScript -->
+                        </select>
+                        <input type="hidden" id="formJsonFormat" name="formJsonFormat">
+                        <p id="formError" class="text-danger mt-2 d-none">Please select a form.</p>
                     </div>
-                </div>
 
-                <!-- Audio Recording Section -->
-                <div class="mb-6 border rounded-md p-4 bg-gray-50">
-                    <div class="flex flex-col space-y-4">
-                        <h3 class="text-md font-medium text-gray-700">Audio Input</h3>
-                        
-                        <!-- Recording Controls -->
-                        <div id="recordingControls" class="flex items-center space-x-4">
-                            <button id="recordButton" type="button" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                                Record
-                            </button>
-                            <span id="recordingStatus" class="text-sm text-gray-500">Press Record or Spacebar to start recording</span>
-                            <span id="recordingTimer" class="hidden text-sm font-medium">00:00</span>
-                        </div>
-                        
-                        <!-- Audio Playback -->
-                        <div id="audioPlayback" class="hidden">
-                            <audio id="audioPlayer" controls class="w-full"></audio>
-                        </div>
-                        
-                        <!-- File Upload Option -->
-                        <div class="mt-4 pt-4 border-t border-gray-200">
-                            <p class="text-sm text-gray-500 mb-2">Or upload an audio file:</p>
-                            <div class="flex items-center">
-                                <label for="audioFile" class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
-                                    <span id="fileLabel">Upload audio file</span>
-                                </label>
-                                <input id="audioFile" name="audio" type="file" accept="audio/*" class="sr-only">
+                    <!-- Language Selection -->
+                    <div class="mb-3">
+                        <label class="form-label">Audio Language:</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input type="radio" id="english" name="language" value="en" checked class="form-check-input">
+                                <label for="english" class="form-check-label">English</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="arabic" name="language" value="ar" class="form-check-input">
+                                <label for="arabic" class="form-check-label">Arabic</label>
                             </div>
                         </div>
                     </div>
-                    <p id="audioError" class="hidden mt-2 text-sm text-red-600">Please record or upload an audio file.</p>
-                </div>
 
-                <!-- Submit Button -->
-                <div class="flex justify-end">
-                    <button id="analyzeButton" type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Analyze
-                    </button>
-                </div>
-            </form>
+                    <!-- model Selection -->
+                    <div class="mb-3">
+                        <label class="form-label">Model Selection:</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input type="radio" id="deepseek" name="model" value="deepseek" checked class="form-check-input">
+                                <label for="deepseek" class="form-check-label">deepseek-V3</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="Llama" name="model" value="Llama" class="form-check-input">
+                                <label for="Llama" class="form-check-label">Llama 4 Maverick</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversation Mode Toggle -->
+                    <div class="mb-3">
+                        <label class="form-label">Options:</label>
+                        <div class="form-check">
+                            <input type="checkbox" id="isConversation" name="isConversation" class="form-check-input">
+                            <label for="isConversation" class="form-check-label">Conversational mode</label>
+                        </div>
+                    </div>
+
+                    <!-- Audio Recording Section -->
+                    <div class="mb-4 border rounded p-3 bg-light">
+                        <div class="mb-3">
+                            <h5>Audio Input</h5>
+                            
+                            <!-- Recording Controls -->
+                            <div id="recordingControls" class="d-flex align-items-center gap-3 mb-3">
+                                <button id="recordButton" type="button" class="btn btn-danger">
+                                    Record
+                                </button>
+                                <span id="recordingStatus" class="text-muted">Press Record or Spacebar to start recording</span>
+                                <span id="recordingTimer" class="d-none fw-bold">00:00</span>
+                            </div>
+                            
+                            <!-- Audio Playback -->
+                            <div id="audioPlayback" class="d-none mb-3">
+                                <audio id="audioPlayer" controls class="w-100"></audio>
+                            </div>
+                            
+                            <!-- File Upload Option -->
+                            <div class="mt-3 pt-3 border-top">
+                                <p class="text-muted mb-2">Or upload an audio file:</p>
+                                <div class="mb-3">
+                                    <label for="audioFile" class="btn btn-outline-secondary">
+                                        <span id="fileLabel">Upload audio file</span>
+                                    </label>
+                                    <input id="audioFile" name="audio" type="file" accept="audio/*" class="d-none">
+                                </div>
+                            </div>
+                        </div>
+                        <p id="audioError" class="text-danger mt-2 d-none">Please record or upload an audio file.</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-end">
+                        <button id="analyzeButton" type="submit" class="btn btn-primary">
+                            Analyze
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <!-- Status Messages -->
-        <div id="statusMessage" class="hidden mb-8 p-4 rounded-lg"></div>
+        <!-- Status Messages with Progress Indicator -->
+        <div id="statusMessage" class="d-none mb-4 p-3 rounded">
+            <div class="d-flex align-items-center">
+                <div id="spinnerContainer" class="me-2 d-none">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="statusMessageText"></div>
+            </div>
+            <!-- Processing Steps -->
+            <div id="processingSteps" class="d-none mt-3 ps-3 border-start border-primary">
+                <div class="d-flex flex-column gap-2">
+                    <div id="step1" class="d-flex align-items-center">
+                        <div class="rounded-circle bg-secondary me-2" style="width: 1rem; height: 1rem;"></div>
+                        <span>Uploading audio...</span>
+                    </div>
+                    <div id="step2" class="d-flex align-items-center">
+                        <div class="rounded-circle bg-secondary me-2" style="width: 1rem; height: 1rem;"></div>
+                        <span>Transcribing audio...</span>
+                    </div>
+                    <div id="step3" class="d-flex align-items-center">
+                        <div class="rounded-circle bg-secondary me-2" style="width: 1rem; height: 1rem;"></div>
+                        <span>Processing text...</span>
+                    </div>
+                    <div id="step4" class="d-flex align-items-center">
+                        <div class="rounded-circle bg-secondary me-2" style="width: 1rem; height: 1rem;"></div>
+                        <span>Extracting information...</span>
+                    </div>
+                    <div id="step5" class="d-flex align-items-center">
+                        <div class="rounded-circle bg-secondary me-2" style="width: 1rem; height: 1rem;"></div>
+                        <span>Finalizing results...</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Estimated Time Remaining -->
+            <div id="estimatedTimeContainer" class="d-none mt-2 text-muted">
+                <span>Estimated time remaining: </span>
+                <span id="estimatedTime">~30 seconds</span>
+            </div>
+        </div>
 
         <!-- Results Section -->
-        <div id="results" class="hidden space-y-8">
+        <div id="results" class="d-none">
             <!-- Raw Transcription -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Raw Transcription</h2>
-                <div id="rawText" class="bg-gray-50 p-4 rounded-lg text-gray-700 whitespace-pre-wrap"></div>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Raw Transcription</h5>
+                    <div id="rawText" class="bg-light p-3 rounded"></div>
+                </div>
             </div>
 
             <!-- Arabic Text -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Arabic Text</h2>
-                <div id="arabicText" class="bg-gray-50 p-4 rounded-lg text-gray-700 whitespace-pre-wrap"></div>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Arabic Text</h5>
+                    <div id="arabicText" class="bg-light p-3 rounded"></div>
+                </div>
             </div>
 
             <!-- translation -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Translation</h2>
-                <div id="translationText" class="bg-gray-50 p-4 rounded-lg text-gray-700 whitespace-pre-wrap"></div>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Translation</h5>
+                    <div id="translationText" class="bg-light p-3 rounded"></div>
+                </div>
             </div>
 
             <!-- Reasoning Section -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Reasoning</h2>
-                <div id="reasoningText" class="bg-gray-50 p-4 rounded-lg text-gray-700 whitespace-pre-wrap"></div>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Reasoning</h5>
+                    <div id="reasoningText" class="bg-light p-3 rounded"></div>
+                </div>
             </div>
 
             <!-- JSON Data Table -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Extracted Features</h2>
-                <div class="overflow-x-auto">
-                    <table id="jsonTable" class="min-w-full table-auto">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Feature</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200"></tbody>
-                    </table>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Extracted Features</h5>
+                    <div class="table-responsive">
+                        <table id="jsonTable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Feature</th>
+                                    <th scope="col">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Include Bootstrap JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
+        // JavaScript remains largely the same, with a few Bootstrap-specific modifications
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('analyzeForm');
             const formSelector = document.getElementById('formSelector');
@@ -146,13 +226,94 @@
             const audioPlayback = document.getElementById('audioPlayback');
             const audioPlayer = document.getElementById('audioPlayer');
             
+            // Processing indicators
+            const statusMessage = document.getElementById('statusMessage');
+            const statusMessageText = document.getElementById('statusMessageText');
+            const spinnerContainer = document.getElementById('spinnerContainer');
+            const processingSteps = document.getElementById('processingSteps');
+            const estimatedTimeContainer = document.getElementById('estimatedTimeContainer');
+            const estimatedTime = document.getElementById('estimatedTime');
+
+            // Processing steps
+            const steps = [
+                document.getElementById('step1'),
+                document.getElementById('step2'),
+                document.getElementById('step3'),
+                document.getElementById('step4'),
+                document.getElementById('step5')
+            ];
+            
             let mediaRecorder;
             let audioChunks = [];
             let recordedBlob = null;
             let startTime;
             let timerInterval;
             let isRecording = false;
+            let processingTimeout;
+            let progressInterval;
+            
+            // Simulate processing progress
+            function simulateProgress() {
+                // Reset all steps
+                steps.forEach(step => {
+                    step.querySelector('div').classList.remove('bg-success', 'bg-primary');
+                    step.querySelector('div').classList.add('bg-secondary');
+                });
+                
+                let currentStep = 0;
+                let estimatedSeconds = 30;
+                
+                // Update estimated time function
+                function updateEstimatedTime(secondsRemaining) {
+                    if (secondsRemaining <= 0) {
+                        estimatedTime.textContent = 'almost done...';
+                    } else if (secondsRemaining < 10) {
+                        estimatedTime.textContent = 'less than 10 seconds';
+                    } else {
+                        estimatedTime.textContent = `~${secondsRemaining} seconds`;
+                    }
+                }
+                
+                // Start with first step
+                steps[currentStep].querySelector('div').classList.remove('bg-secondary');
+                steps[currentStep].querySelector('div').classList.add('bg-primary');
+                
+                // Initial estimated time
+                updateEstimatedTime(estimatedSeconds);
+                
+                // Progress interval
+                progressInterval = setInterval(() => {
+                    // Decrease estimated time
+                    estimatedSeconds -= 2;
+                    updateEstimatedTime(estimatedSeconds);
+                    
+                    // Move to next step roughly every 5 seconds
+                    if ((currentStep < 4) && (Math.random() > 0.7 || estimatedSeconds <= (4 - currentStep) * 5)) {
+                        // Mark current step as completed
+                        steps[currentStep].querySelector('div').classList.remove('bg-primary');
+                        steps[currentStep].querySelector('div').classList.add('bg-success');
                         
+                        // Move to next step
+                        currentStep++;
+                        steps[currentStep].querySelector('div').classList.remove('bg-secondary');
+                        steps[currentStep].querySelector('div').classList.add('bg-primary');
+                    }
+                }, 2000);
+                
+                // Fallback timeout to avoid stuck progress
+                processingTimeout = setTimeout(() => {
+                    clearInterval(progressInterval);
+                    
+                    // Mark all steps as complete
+                    steps.forEach(step => {
+                        step.querySelector('div').classList.remove('bg-secondary', 'bg-primary');
+                        step.querySelector('div').classList.add('bg-success');
+                    });
+                    
+                    estimatedTime.textContent = 'processing is taking longer than expected...';
+                }, 60000); // Fallback after 60 seconds
+            }
+            
             // Setup audio recording
             setupAudioRecording();
             
@@ -171,6 +332,12 @@
                 
                 // Add click listener for record button
                 recordButton.addEventListener('click', toggleRecording);
+                
+                // Add keyboard shortcut hint
+                const shortcutHint = document.createElement('div');
+                shortcutHint.className = 'mt-2 small text-muted';
+                shortcutHint.textContent = 'Keyboard shortcut: Press spacebar to start/stop recording';
+                recordingControls.appendChild(shortcutHint);
             }
             
             // Function to toggle recording state
@@ -182,7 +349,10 @@
                     } catch (err) {
                         console.error('Error accessing microphone:', err);
                         recordingStatus.textContent = 'Error accessing microphone. Please check permissions.';
-                        recordingStatus.classList.add('text-red-500');
+                        recordingStatus.classList.add('text-danger');
+                        
+                        // Show toast notification for microphone error
+                        showToastNotification('Microphone access denied. Please check your browser permissions.', 'error');
                     }
                 } else {
                     stopRecording();
@@ -214,22 +384,25 @@
                     audioPlayer.src = audioURL;
                     
                     // Show playback controls
-                    audioPlayback.classList.remove('hidden');
+                    audioPlayback.classList.remove('d-none');
                     
                     // Update UI
                     recordingStatus.textContent = 'Recording completed';
                     recordButton.textContent = 'Record';
-                    recordButton.classList.remove('bg-red-600', 'hover:bg-red-700');
-                    recordButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                    recordButton.classList.remove('btn-danger');
+                    recordButton.classList.add('btn-primary');
                     
                     // Hide timer
-                    recordingTimer.classList.add('hidden');
+                    recordingTimer.classList.add('d-none');
                     
                     // Release microphone
                     stream.getTracks().forEach(track => track.stop());
                     
                     // Validate form
                     validateForm();
+                    
+                    // Show toast notification for recording complete
+                    showToastNotification('Recording completed successfully!', 'success');
                 };
                 
                 // Start recording
@@ -237,15 +410,18 @@
                 
                 // Update UI
                 recordButton.textContent = 'Stop';
-                recordButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                recordButton.classList.add('bg-red-600', 'hover:bg-red-700');
+                recordButton.classList.remove('btn-primary');
+                recordButton.classList.add('btn-danger');
                 recordingStatus.textContent = 'Recording...';
                 
                 // Start timer
                 startTime = Date.now();
-                recordingTimer.classList.remove('hidden');
+                recordingTimer.classList.remove('d-none');
                 updateTimer();
                 timerInterval = setInterval(updateTimer, 1000);
+                
+                // Show toast notification for recording started
+                showToastNotification('Recording started. Speak now...', 'info');
             }
             
             // Function to stop recording
@@ -267,14 +443,48 @@
                 recordingTimer.textContent = `${minutes}:${seconds}`;
             }
             
-            
+            // Show toast notification - Bootstrap version
+            function showToastNotification(message, type = 'info') {
+                // Create toast container if it doesn't exist
+                let toastContainer = document.getElementById('toast-container');
+                if (!toastContainer) {
+                    toastContainer = document.createElement('div');
+                    toastContainer.id = 'toast-container';
+                    toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                    toastContainer.style.zIndex = '11';
+                    document.body.appendChild(toastContainer);
+                }
+                
+                const toastId = 'toast-' + Date.now();
+                const bgClass = type === 'error' ? 'bg-danger' : 
+                                type === 'success' ? 'bg-success' : 'bg-primary';
+                
+                const toastHTML = `
+                    <div id="${toastId}" class="toast text-white ${bgClass}" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                    </div>
+                `;
+                
+                toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+                
+                const toastElement = document.getElementById(toastId);
+                const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+                toast.show();
+                
+                // Remove toast after it's hidden
+                toastElement.addEventListener('hidden.bs.toast', function() {
+                    toastElement.remove();
+                });
+            }
             
             // When a form is selected, store its JSON format in the hidden input
             formSelector.addEventListener('change', function() {
                 const selectedOption = formSelector.options[formSelector.selectedIndex];
                 if (selectedOption.value) {
                     formJsonFormat.value = selectedOption.dataset.jsonFormat;
-                    formError.classList.add('hidden');
+                    formError.classList.add('d-none');
                 } else {
                     formJsonFormat.value = '';
                 }
@@ -286,9 +496,9 @@
                 const hasAudio = audioFile.files.length > 0 || recordedBlob !== null;
                 
                 if (hasAudio) {
-                    audioError.classList.add('hidden');
+                    audioError.classList.add('d-none');
                 } else {
-                    audioError.classList.remove('hidden');
+                    audioError.classList.remove('d-none');
                 }
                 
                 analyzeButton.disabled = !(hasAudio);
@@ -301,7 +511,10 @@
                     
                     // Clear recorded audio if file is uploaded
                     recordedBlob = null;
-                    audioPlayback.classList.add('hidden');
+                    audioPlayback.classList.add('d-none');
+                    
+                    // Show toast notification for file upload
+                    showToastNotification('Audio file selected successfully!', 'success');
                 } else {
                     fileLabel.textContent = 'Upload audio file';
                 }
@@ -315,14 +528,19 @@
                 const hasAudio = audioFile.files.length > 0 || recordedBlob !== null;
                 
                 if (!hasAudio) {
-                    audioError.classList.remove('hidden');
-                }
-                
-                if (!hasAudio) {
+                    audioError.classList.remove('d-none');
+                    showToastNotification('Please record or upload an audio file', 'error');
                     return false;
                 }
                 
-                showStatus('Processing your request...');
+                // Hide any previous results
+                document.getElementById('results').classList.add('d-none');
+                
+                // Show processing status with spinner
+                showStatus('Processing your request...', 'info', true);
+                
+                // Start simulating progress
+                simulateProgress();
                 
                 const formData = new FormData(form);
                 
@@ -338,17 +556,41 @@
                         body: formData
                     });
                     
+                    // Clear processing simulation
+                    clearTimeout(processingTimeout);
+                    clearInterval(progressInterval);
+                    
                     if (!response.ok) {
                         const errorData = await response.json();
                         throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
                     }
                     
                     const data = await response.json();
-                    showStatus('Analysis completed successfully!', 'success');
-                    displayResults(data);
+                    
+                    // Complete all progress steps
+                    steps.forEach(step => {
+                        step.querySelector('div').classList.remove('bg-secondary', 'bg-primary');
+                        step.querySelector('div').classList.add('bg-success');
+                    });
+                    
+                    // Show success status after a short delay
+                    setTimeout(() => {
+                        showStatus('Analysis completed successfully!', 'success', false);
+                        displayResults(data);
+                        
+                        // Show toast notification for completion
+                        showToastNotification('Analysis completed successfully!', 'success');
+                        
+                        // Scroll to results
+                        document.getElementById('results').scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 500);
                 } catch (error) {
                     console.error('Error:', error);
-                    showStatus(`Error: ${error.message}`, 'error');
+                    showStatus(`Error: ${error.message}`, 'error', false);
+                    showToastNotification('An error occurred during processing', 'error');
                 }
             });
             
@@ -372,22 +614,41 @@
             return String(value);
         }
 
-        // Show status message
-        function showStatus(message, type = 'info') {
+        // Show status message with enhanced options - Bootstrap version
+        function showStatus(message, type = 'info', showProcessingUI = false) {
             const statusDiv = document.getElementById('statusMessage');
-            statusDiv.textContent = message;
-            statusDiv.className = `mb-8 p-4 rounded-lg ${
-                type === 'error' ? 'bg-red-100 text-red-700' :
-                type === 'success' ? 'bg-green-100 text-green-700' :
-                'bg-blue-100 text-blue-700'
+            const statusText = document.getElementById('statusMessageText');
+            const spinnerContainer = document.getElementById('spinnerContainer');
+            const processingSteps = document.getElementById('processingSteps');
+            const estimatedTimeContainer = document.getElementById('estimatedTimeContainer');
+            
+            statusText.textContent = message;
+            
+            // Set appropriate background color using Bootstrap classes
+            statusDiv.className = `mb-4 p-3 rounded ${
+                type === 'error' ? 'alert alert-danger' :
+                type === 'success' ? 'alert alert-success' :
+                'alert alert-primary'
             }`;
-            statusDiv.classList.remove('hidden');
+            
+            // Show/hide the spinner
+            if (showProcessingUI) {
+                spinnerContainer.classList.remove('d-none');
+                processingSteps.classList.remove('d-none');
+                estimatedTimeContainer.classList.remove('d-none');
+            } else {
+                spinnerContainer.classList.add('d-none');
+                processingSteps.classList.add('d-none');
+                estimatedTimeContainer.classList.add('d-none');
+            }
+            
+            statusDiv.classList.remove('d-none');
         }
 
         // Display the results
         function displayResults(data) {
             // Show results section
-            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('results').classList.remove('d-none');
             
             // Display raw text
             document.getElementById('rawText').textContent = data.raw_text || '';
@@ -409,8 +670,8 @@
                 Object.entries(data.json_data).forEach(([key, value]) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${key}</td>
-                        <td class="px-6 py-4 whitespace-normal text-sm text-gray-500">${formatValue(value)}</td>
+                        <td class="fw-medium">${key}</td>
+                        <td>${formatValue(value)}</td>
                     `;
                     tableBody.appendChild(row);
                 });

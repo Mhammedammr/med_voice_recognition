@@ -1,0 +1,32 @@
+2025-04-14 17:27:37,304 - INFO - [84281] - root - Initializing application
+2025-04-14 17:27:37,304 - INFO - [84281] - root - Starting Flask server on port 8586
+2025-04-14 17:27:37,327 - WARNING - [84281] - werkzeug -  * Debugger is active!
+2025-04-14 17:27:37,333 - INFO - [84281] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-14 17:27:37,755 - INFO - [84281] - root - Received upload request
+2025-04-14 17:27:37,759 - INFO - [84281] - root - Upload parameters: language=ar ,conversational mode=True
+2025-04-14 17:27:37,763 - INFO - [84281] - root - File saved to uploads/3af79d7aa61548afb9bbf31129f518f1.m4a
+2025-04-14 17:27:37,764 - INFO - [84281] - root - Starting batch processing mode
+2025-04-14 17:27:37,764 - INFO - [84281] - src.services.audio_service - File saved: uploads/3af79d7aa61548afb9bbf31129f518f1.m4a
+2025-04-14 17:27:42,483 - ERROR - [84281] - src.services.audio_service - Error in batch processing: type object 'AudioService' has no attribute '_split_audio'
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/audio_service.py", line 41, in process_batch
+    raw_text = AudioService._process_audio_parallel(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/audio_service.py", line 121, in _process_audio_parallel
+    chunks = AudioService._split_audio(file_path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'AudioService' has no attribute '_split_audio'
+2025-04-14 17:27:42,485 - ERROR - [84281] - root - Error in batch processing: type object 'AudioService' has no attribute '_split_audio'
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py", line 88, in upload
+    response = AudioService.process_batch(file_path, language, model, conversational_mode)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/audio_service.py", line 41, in process_batch
+    raw_text = AudioService._process_audio_parallel(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/audio_service.py", line 121, in _process_audio_parallel
+    chunks = AudioService._split_audio(file_path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'AudioService' has no attribute '_split_audio'
+2025-04-14 17:27:42,487 - INFO - [84281] - werkzeug - 127.0.0.1 - - [14/Apr/2025 17:27:42] "[35m[1mPOST /upload HTTP/1.1[0m" 500 -
+2025-04-14 17:28:31,710 - INFO - [84281] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/audio_service.py', reloading

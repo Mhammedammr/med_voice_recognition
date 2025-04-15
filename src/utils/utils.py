@@ -30,4 +30,8 @@ def setup_logger():
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
     
+<<<<<<< HEAD
     return logger
+=======
+    return logger
+>>>>>>> 78d71f9 (optmizing project strcture)

@@ -1,0 +1,33 @@
+2025-04-14 17:24:05,698 - INFO - [83154] - root - Initializing application
+2025-04-14 17:24:05,698 - INFO - [83154] - root - Starting Flask server on port 8586
+2025-04-14 17:24:05,721 - WARNING - [83154] - werkzeug -  * Debugger is active!
+2025-04-14 17:24:05,729 - INFO - [83154] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-14 17:24:05,779 - INFO - [83154] - root - Serving index page
+2025-04-14 17:24:05,783 - INFO - [83154] - werkzeug - 127.0.0.1 - - [14/Apr/2025 17:24:05] "GET / HTTP/1.1" 200 -
+2025-04-14 17:24:13,228 - INFO - [83154] - root - Received upload request
+2025-04-14 17:24:13,231 - INFO - [83154] - root - Upload parameters: language=ar ,conversational mode=True
+2025-04-14 17:24:13,231 - INFO - [83154] - root - File saved to uploads/c352eee902bc426cb14059c70d123e32.m4a
+2025-04-14 17:24:13,231 - INFO - [83154] - root - Starting batch processing mode
+2025-04-14 17:24:13,232 - ERROR - [83154] - src.services.audio_service - Error in batch processing: 'str' object has no attribute 'filename'
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/audio_service.py", line 31, in process_batch
+    file_path = FileService.save_file(audio_file, current_app.config["UPLOAD_FOLDER"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/file_service.py", line 10, in save_file
+    unique_filename = FileService._generate_unique_filename(file.filename)
+                                                            ^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'filename'
+2025-04-14 17:24:13,234 - ERROR - [83154] - root - Error in batch processing: 'str' object has no attribute 'filename'
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py", line 88, in upload
+    response = AudioService.process_batch(file_path, language, model, conversational_mode)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/audio_service.py", line 31, in process_batch
+    file_path = FileService.save_file(audio_file, current_app.config["UPLOAD_FOLDER"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/file_service.py", line 10, in save_file
+    unique_filename = FileService._generate_unique_filename(file.filename)
+                                                            ^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'filename'
+2025-04-14 17:24:13,236 - INFO - [83154] - werkzeug - 127.0.0.1 - - [14/Apr/2025 17:24:13] "[35m[1mPOST /upload HTTP/1.1[0m" 500 -
+2025-04-14 17:26:37,352 - INFO - [83154] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/file_service.py', reloading

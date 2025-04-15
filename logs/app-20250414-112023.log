@@ -1,0 +1,46 @@
+2025-04-14 11:20:23,644 - INFO - [82490] - root - Initializing application
+2025-04-14 11:20:23,644 - INFO - [82490] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-14 11:20:23,746 - INFO - [82490] - root - Database setup successful
+2025-04-14 11:20:23,746 - INFO - [82490] - root - Starting Flask server on port 8586
+2025-04-14 11:20:23,773 - WARNING - [82490] - werkzeug -  * Debugger is active!
+2025-04-14 11:20:23,781 - INFO - [82490] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-14 11:20:28,325 - INFO - [82490] - root - Received upload request
+2025-04-14 11:20:28,329 - INFO - [82490] - root - Upload parameters: language=ar, streaming=False,conversational mode=True
+2025-04-14 11:20:28,330 - INFO - [82490] - root - File saved to uploads/d93047082d09463d9a95daf60a4e2beb.m4a
+2025-04-14 11:20:28,330 - INFO - [82490] - root - Starting batch processing mode
+2025-04-14 11:20:28,330 - INFO - [82490] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-14 11:20:28,375 - INFO - [82490] - root - Database setup successful
+2025-04-14 11:20:28,376 - INFO - [82490] - root - Database session initialized
+2025-04-14 11:20:28,376 - INFO - [82490] - root - Starting audio preprocessing
+2025-04-14 11:20:30,232 - INFO - [82490] - root - Audio preprocessing completed in 1.8558 seconds
+2025-04-14 11:20:30,232 - INFO - [82490] - root - Starting audio transcription in ar
+2025-04-14 11:20:30,232 - INFO - [82490] - root - Starting parallel audio processing with 3 workers
+2025-04-14 11:20:30,232 - INFO - [82490] - root - Splitting audio file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_eij7l9p/processed_audio.wav into chunks of 60% of total duration
+2025-04-14 11:20:30,240 - INFO - [82490] - root - Created 2 audio chunks (each 60% of total duration)
+2025-04-14 11:20:30,240 - INFO - [82490] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_eij7l9p/processed_audio.wav_chunk_0.wav
+2025-04-14 11:20:30,241 - INFO - [82490] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_eij7l9p/processed_audio.wav_chunk_21651.wav
+2025-04-14 11:20:34,063 - INFO - [82490] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-14 11:20:34,077 - INFO - [82490] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_eij7l9p/processed_audio.wav_chunk_21651.wav
+2025-04-14 11:20:36,044 - INFO - [82490] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-14 11:20:36,047 - INFO - [82490] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_eij7l9p/processed_audio.wav_chunk_0.wav
+2025-04-14 11:20:36,047 - INFO - [82490] - root - Chunk 0 processing completed
+2025-04-14 11:20:36,048 - INFO - [82490] - root - Chunk 1 processing completed
+2025-04-14 11:20:36,048 - INFO - [82490] - root - Parallel processing completed, combined text length: 328
+2025-04-14 11:20:36,048 - INFO - [82490] - root - Audio transcription completed in 5.8165 seconds, text length: 328
+2025-04-14 11:20:36,049 - INFO - [82490] - root - Starting LLM processing
+2025-04-14 11:20:38,921 - INFO - [82490] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 11:20:38,922 - INFO - [82490] - root - LLM refining processing completed in 2.8734 seconds
+2025-04-14 11:20:38,922 - INFO - [82490] - root - Starting LLM processing
+2025-04-14 11:20:41,834 - INFO - [82490] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 11:20:41,839 - INFO - [82490] - root - LLM translation processing completed in 2.9165 seconds
+2025-04-14 11:20:41,839 - INFO - [82490] - root - Starting LLM processing
+2025-04-14 11:20:45,714 - INFO - [82490] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 11:20:45,729 - INFO - [82490] - root - LLM processing completed in 3.8897 seconds
+2025-04-14 11:20:45,729 - INFO - [82490] - root - Parsing refined text
+2025-04-14 11:20:45,730 - INFO - [82490] - root - Total processing completed in 17.3541 seconds
+2025-04-14 11:20:45,731 - INFO - [82490] - root - Removed processed file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp_eij7l9p/processed_audio.wav
+2025-04-14 11:20:45,731 - INFO - [82490] - root - Saving results to database
+2025-04-14 11:20:45,761 - INFO - [82490] - root - Results saved to database with ID 257
+2025-04-14 11:20:45,762 - INFO - [82490] - root - Database session closed
+2025-04-14 11:20:45,763 - INFO - [82490] - werkzeug - 127.0.0.1 - - [14/Apr/2025 11:20:45] "POST /upload HTTP/1.1" 200 -
+2025-04-14 11:21:23,001 - INFO - [82490] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py', reloading

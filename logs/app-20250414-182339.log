@@ -1,0 +1,37 @@
+2025-04-14 18:23:39,288 - INFO - [2563] - root - Initializing application
+2025-04-14 18:23:39,288 - INFO - [2563] - root - Starting Flask server on port 8586
+2025-04-14 18:23:39,313 - WARNING - [2563] - werkzeug -  * Debugger is active!
+2025-04-14 18:23:39,321 - INFO - [2563] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-14 18:23:47,797 - INFO - [2563] - root - Received upload request
+2025-04-14 18:23:47,801 - INFO - [2563] - root - Upload parameters: language=ar ,conversational mode=True
+2025-04-14 18:23:47,803 - INFO - [2563] - root - File saved to uploads/58bacdcacf1d48709133dfae5e97fa9b.m4a
+2025-04-14 18:23:47,803 - INFO - [2563] - root - Starting batch processing mode
+2025-04-14 18:23:47,803 - INFO - [2563] - src.services.audio_service - File saved: uploads/58bacdcacf1d48709133dfae5e97fa9b.m4a
+2025-04-14 18:23:49,540 - INFO - [2563] - src.services.audio_service - Created 1 audio chunks (each 100% of total duration)
+2025-04-14 18:23:49,542 - INFO - [2563] - src.services.audio_service - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpvcoxeezb/processed_audio.wav_chunk_0.wav
+2025-04-14 18:23:57,111 - INFO - [2563] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-14 18:23:57,116 - INFO - [2563] - src.services.audio_service - Removed preprocessed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpypyh1904/processed_audio.wav
+2025-04-14 18:23:57,117 - INFO - [2563] - src.services.llm_service - Calling LLM API with model: accounts/fireworks/models/llama4-maverick-instruct-basic
+2025-04-14 18:23:59,259 - INFO - [2563] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 18:23:59,266 - INFO - [2563] - src.services.llm_service - Calling LLM API with model: accounts/fireworks/models/llama4-maverick-instruct-basic
+2025-04-14 18:24:00,998 - INFO - [2563] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 18:24:00,999 - INFO - [2563] - src.services.llm_service - Calling LLM API with model: accounts/fireworks/models/llama4-maverick-instruct-basic
+2025-04-14 18:24:04,277 - INFO - [2563] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 18:24:04,284 - INFO - [2563] - werkzeug - 127.0.0.1 - - [14/Apr/2025 18:24:04] "POST /upload HTTP/1.1" 200 -
+2025-04-14 18:24:49,062 - INFO - [2563] - root - Received upload request
+2025-04-14 18:24:49,064 - INFO - [2563] - root - Upload parameters: language=ar ,conversational mode=True
+2025-04-14 18:24:49,066 - INFO - [2563] - root - File saved to uploads/12fbc38244c1430ca267fc61f49d0534.m4a
+2025-04-14 18:24:49,066 - INFO - [2563] - root - Starting batch processing mode
+2025-04-14 18:24:49,066 - INFO - [2563] - src.services.audio_service - File saved: uploads/12fbc38244c1430ca267fc61f49d0534.m4a
+2025-04-14 18:24:49,626 - INFO - [2563] - src.services.audio_service - Created 1 audio chunks (each 100% of total duration)
+2025-04-14 18:24:49,626 - INFO - [2563] - src.services.audio_service - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpmjiicgf_/processed_audio.wav_chunk_0.wav
+2025-04-14 18:24:57,425 - INFO - [2563] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-14 18:24:57,429 - INFO - [2563] - src.services.audio_service - Removed preprocessed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpojnhhfpq/processed_audio.wav
+2025-04-14 18:24:57,430 - INFO - [2563] - src.services.llm_service - Calling LLM API with model: accounts/fireworks/models/deepseek-v3
+2025-04-14 18:25:01,518 - INFO - [2563] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 18:25:01,522 - INFO - [2563] - src.services.llm_service - Calling LLM API with model: accounts/fireworks/models/deepseek-v3
+2025-04-14 18:25:04,988 - INFO - [2563] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 18:25:04,993 - INFO - [2563] - src.services.llm_service - Calling LLM API with model: accounts/fireworks/models/deepseek-v3
+2025-04-14 18:25:10,432 - INFO - [2563] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-14 18:25:10,442 - INFO - [2563] - werkzeug - 127.0.0.1 - - [14/Apr/2025 18:25:10] "POST /upload HTTP/1.1" 200 -
+2025-04-15 01:21:16,078 - INFO - [2563] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/llm_service.py', reloading

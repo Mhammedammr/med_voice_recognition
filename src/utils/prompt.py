@@ -10,12 +10,13 @@ def get_refine_arabic_prompt_deepseek(raw_text):
 
 def get_refine_arabic_prompt_deepseek_conv(raw_text):
     return f"""
-    Correct this Arabic medical conversation. 
-    Add **DOCTOR:** and **PATIENT:** labels based on context.
-    Return only the corrected Arabic dialogue with no additional text.
-
+    Analyze this Arabic medical conversation and format it properly:
+    1. Identify who is speaking: the doctor typically asks questions, performs examinations, gives diagnoses, and suggests treatments, while the patient describes symptoms, complaints, and medical history.
+    2. Label each speaker as **DOCTOR:** or **PATIENT:** before their dialogue.
+    3. Return only the properly formatted Arabic dialogue with speaker labels.
+    
     ORIGINAL TEXT:
-    \"\"\"{raw_text}\"\"\"
+\"\"\"{raw_text}\"\"\"
     """
 
 
@@ -86,13 +87,24 @@ def get_refine_arabic_prompt_llama(raw_text):
 
 def get_refine_arabic_prompt_llama_conv(raw_text):
     return f"""
-            Correct this Arabic medical conversation while preserving meaning. 
-            Label speakers as **DOCTOR:** and **PATIENT:** based on context.
-            Only return the corrected conversation with no additional text.
+    <SYSTEM>
+    You are an expert Arabic medical language specialist. Your task is to accurately format Arabic medical conversations.
+    </SYSTEM>
+    
+    <HUMAN>
+    Format this Arabic medical conversation:
+    1. Identify the doctor (who asks questions, examines, diagnoses, and recommends treatments)
+    2. Identify the patient (who describes symptoms, answers questions, and explains health concerns)
+    3. Label each speaker with **DOCTOR:** or **PATIENT:** based on their role
+    4. Maintain all original Arabic content and meaning
+    5. Return only the formatted conversation without explanations or additional text
 
-            ORIGINAL TEXT:
-            \"\"\"{raw_text}\"\"\"
-            """
+    Original text:
+    {raw_text}
+    </HUMAN>
+    
+    <ASSISTANT>
+    """
 
 
 def get_translation_prompt_llama(refined_text):

@@ -1,0 +1,67 @@
+2025-04-13 12:25:23,745 - INFO - [14401] - root - Initializing application
+2025-04-13 12:25:23,745 - INFO - [14401] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-13 12:25:23,800 - INFO - [14401] - root - Database setup successful
+2025-04-13 12:25:23,800 - INFO - [14401] - root - Starting Flask server on port 8586
+2025-04-13 12:25:23,819 - WARNING - [14401] - werkzeug -  * Debugger is active!
+2025-04-13 12:25:23,828 - INFO - [14401] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-13 12:25:23,876 - INFO - [14401] - root - Received upload request
+2025-04-13 12:25:23,878 - INFO - [14401] - root - Upload parameters: language=ar, streaming=False,conversational mode=True
+2025-04-13 12:25:23,879 - INFO - [14401] - root - File saved to uploads/7bf9b20b69d94841b0d4382284ad8407.m4a
+2025-04-13 12:25:23,879 - INFO - [14401] - root - Starting batch processing mode
+2025-04-13 12:25:23,879 - INFO - [14401] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-13 12:25:23,898 - INFO - [14401] - root - Database setup successful
+2025-04-13 12:25:23,899 - INFO - [14401] - root - Database session initialized
+2025-04-13 12:25:23,899 - INFO - [14401] - root - Starting audio preprocessing
+2025-04-13 12:25:27,298 - INFO - [14401] - root - Audio preprocessing completed in 3.3990 seconds
+2025-04-13 12:25:27,298 - INFO - [14401] - root - Starting audio transcription in ar
+2025-04-13 12:25:27,298 - INFO - [14401] - root - Starting parallel audio processing with 3 workers
+2025-04-13 12:25:27,298 - INFO - [14401] - root - Splitting audio file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpa8mq1dtv/processed_audio.wav into chunks of 25000ms
+2025-04-13 12:25:27,308 - INFO - [14401] - root - Created 2 audio chunks
+2025-04-13 12:25:27,309 - INFO - [14401] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpa8mq1dtv/processed_audio.wav_chunk_0.wav
+2025-04-13 12:25:27,309 - INFO - [14401] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpa8mq1dtv/processed_audio.wav_chunk_25000.wav
+2025-04-13 12:25:29,846 - INFO - [14401] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-13 12:25:29,850 - INFO - [14401] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpa8mq1dtv/processed_audio.wav_chunk_25000.wav
+2025-04-13 12:25:32,885 - INFO - [14401] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-13 12:25:32,889 - INFO - [14401] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpa8mq1dtv/processed_audio.wav_chunk_0.wav
+2025-04-13 12:25:32,890 - INFO - [14401] - root - Chunk 0 processing completed
+2025-04-13 12:25:32,890 - INFO - [14401] - root - Chunk 1 processing completed
+2025-04-13 12:25:32,891 - INFO - [14401] - root - Parallel processing completed, combined text length: 386
+2025-04-13 12:25:32,892 - INFO - [14401] - root - Audio transcription completed in 5.5938 seconds, text length: 386
+2025-04-13 12:25:32,892 - INFO - [14401] - root - Starting LLM processing
+2025-04-13 12:25:33,609 - INFO - [14401] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 404 Not Found"
+2025-04-13 12:25:33,610 - ERROR - [14401] - root - Error in batch processing: LLM processing failed: {'error': 'Model not found, inaccessible, and/or not deployed'}
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/llm_service.py", line 26, in refine_ar_transcribtion
+    response = fireworks.client.Completion.create(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/fireworks/client/base_completion.py", line 81, in create
+    return cls._create_non_streaming(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/fireworks/client/base_completion.py", line 180, in _create_non_streaming
+    response = client.post_request_non_streaming(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/fireworks/client/api_client.py", line 162, in post_request_non_streaming
+    self._error_handling(response)
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/fireworks/client/api_client.py", line 124, in _error_handling
+    self._raise_for_status(resp)
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/fireworks/client/api_client.py", line 113, in _raise_for_status
+    self._raise_for(response.status_code, get_error_message)
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/fireworks/client/api_client.py", line 79, in _raise_for
+    raise InvalidRequestError(error_message())
+fireworks.client.error.InvalidRequestError: {'error': 'Model not found, inaccessible, and/or not deployed'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py", line 326, in upload
+    refined_text = LLMService.refine_ar_transcribtion(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/llm_service.py", line 38, in refine_ar_transcribtion
+    raise Exception(f"LLM processing failed: {str(e)}")
+Exception: LLM processing failed: {'error': 'Model not found, inaccessible, and/or not deployed'}
+2025-04-13 12:25:33,619 - INFO - [14401] - root - Database session rolled back
+2025-04-13 12:25:33,619 - INFO - [14401] - root - Cleaned up file uploads/7bf9b20b69d94841b0d4382284ad8407.m4a
+2025-04-13 12:25:33,620 - INFO - [14401] - root - Removed processed file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpa8mq1dtv/processed_audio.wav
+2025-04-13 12:25:33,623 - INFO - [14401] - root - Database session closed
+2025-04-13 12:25:33,625 - INFO - [14401] - werkzeug - 127.0.0.1 - - [13/Apr/2025 12:25:33] "[35m[1mPOST /upload HTTP/1.1[0m" 500 -
+2025-04-13 12:26:46,008 - INFO - [14401] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/llm_service.py', reloading

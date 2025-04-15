@@ -1,0 +1,14 @@
+2025-04-14 17:26:40,005 - INFO - [83972] - root - Initializing application
+2025-04-14 17:26:40,006 - INFO - [83972] - root - Starting Flask server on port 8586
+2025-04-14 17:26:40,030 - WARNING - [83972] - werkzeug -  * Debugger is active!
+2025-04-14 17:26:40,038 - INFO - [83972] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-14 17:26:45,434 - INFO - [83972] - root - Received upload request
+2025-04-14 17:26:45,438 - INFO - [83972] - root - Upload parameters: language=ar ,conversational mode=True
+2025-04-14 17:26:45,438 - ERROR - [83972] - root - Error saving file: type object 'FileService' has no attribute 'save_file'
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py", line 73, in upload
+    file_path = FileService.save_file(audio_file, app.config["UPLOAD_FOLDER"])
+                ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'FileService' has no attribute 'save_file'
+2025-04-14 17:26:45,440 - INFO - [83972] - werkzeug - 127.0.0.1 - - [14/Apr/2025 17:26:45] "[35m[1mPOST /upload HTTP/1.1[0m" 500 -
+2025-04-14 17:27:35,044 - INFO - [83972] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/file_service.py', reloading

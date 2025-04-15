@@ -1,0 +1,43 @@
+2025-04-14 17:28:52,310 - INFO - [84722] - root - Initializing application
+2025-04-14 17:28:52,310 - INFO - [84722] - root - Starting Flask server on port 8586
+2025-04-14 17:28:52,377 - INFO - [84722] - werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8586
+2025-04-14 17:28:52,378 - INFO - [84722] - werkzeug - [33mPress CTRL+C to quit[0m
+2025-04-14 17:28:52,380 - INFO - [84722] - werkzeug -  * Restarting with stat
+2025-04-14 17:28:54,040 - INFO - [84740] - root - Initializing application
+2025-04-14 17:28:54,040 - INFO - [84740] - root - Starting Flask server on port 8586
+2025-04-14 17:28:54,061 - WARNING - [84740] - werkzeug -  * Debugger is active!
+2025-04-14 17:28:54,069 - INFO - [84740] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-14 17:28:54,117 - INFO - [84740] - root - Received upload request
+2025-04-14 17:28:54,118 - INFO - [84740] - root - Upload parameters: language=ar ,conversational mode=True
+2025-04-14 17:28:54,119 - INFO - [84740] - root - File saved to uploads/c7201ee487ce46289175ea55b5f13c06.m4a
+2025-04-14 17:28:54,119 - INFO - [84740] - root - Starting batch processing mode
+2025-04-14 17:28:54,119 - INFO - [84740] - src.services.audio_service - File saved: uploads/c7201ee487ce46289175ea55b5f13c06.m4a
+2025-04-14 17:28:56,490 - INFO - [84740] - src.services.audio_service - Splitting audio file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp8ovk2bqp/processed_audio.wav into chunks of 100% of total duration
+2025-04-14 17:28:56,500 - INFO - [84740] - src.services.audio_service - Created 1 audio chunks (each 100% of total duration)
+2025-04-14 17:28:56,513 - INFO - [84740] - src.services.audio_service - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp8ovk2bqp/processed_audio.wav_chunk_0.wav
+2025-04-14 17:28:56,514 - INFO - [84740] - src.services.audio_service - Preprocessing chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp8ovk2bqp/processed_audio.wav_chunk_0.wav
+2025-04-14 17:29:04,486 - INFO - [84740] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-14 17:29:04,489 - INFO - [84740] - src.services.audio_service - Removed preprocessed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpfd0kgyx8/processed_audio.wav
+2025-04-14 17:29:04,489 - INFO - [84740] - src.services.audio_service - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmp8ovk2bqp/processed_audio.wav_chunk_0.wav
+2025-04-14 17:29:04,490 - ERROR - [84740] - src.services.audio_service - Error in batch processing: type object 'LLMService' has no attribute 'refine_ar_transcribtion'
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/audio_service.py", line 50, in process_batch
+    refined_text = LLMService.refine_ar_transcribtion(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'LLMService' has no attribute 'refine_ar_transcribtion'
+2025-04-14 17:29:04,491 - ERROR - [84740] - root - Error in batch processing: type object 'LLMService' has no attribute 'refine_ar_transcribtion'
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py", line 88, in upload
+    response = AudioService.process_batch(file_path, language, model, conversational_mode)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/audio_service.py", line 50, in process_batch
+    refined_text = LLMService.refine_ar_transcribtion(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'LLMService' has no attribute 'refine_ar_transcribtion'
+2025-04-14 17:29:04,492 - INFO - [84740] - werkzeug - 127.0.0.1 - - [14/Apr/2025 17:29:04] "[35m[1mPOST /upload HTTP/1.1[0m" 500 -
+2025-04-14 17:29:23,569 - INFO - [84740] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/services/llm_service.py', reloading
+2025-04-14 17:29:23,902 - INFO - [84722] - werkzeug -  * Restarting with stat
+2025-04-14 17:29:27,225 - INFO - [84722] - werkzeug -  * Restarting with stat
+2025-04-14 17:30:35,747 - INFO - [84722] - werkzeug -  * Restarting with stat
+2025-04-14 17:30:39,028 - INFO - [84722] - werkzeug -  * Restarting with stat

@@ -1,0 +1,20 @@
+2025-04-14 17:23:37,158 - INFO - [82980] - root - Initializing application
+2025-04-14 17:23:37,158 - INFO - [82980] - root - Starting Flask server on port 8586
+2025-04-14 17:23:37,184 - INFO - [82980] - werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8586
+2025-04-14 17:23:37,184 - INFO - [82980] - werkzeug - [33mPress CTRL+C to quit[0m
+2025-04-14 17:23:37,185 - INFO - [82980] - werkzeug -  * Restarting with stat
+2025-04-14 17:23:38,619 - INFO - [82998] - root - Initializing application
+2025-04-14 17:23:38,619 - INFO - [82998] - root - Starting Flask server on port 8586
+2025-04-14 17:23:38,642 - WARNING - [82998] - werkzeug -  * Debugger is active!
+2025-04-14 17:23:38,661 - INFO - [82998] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-14 17:23:40,941 - INFO - [82998] - root - Serving index page
+2025-04-14 17:23:40,961 - INFO - [82998] - werkzeug - 127.0.0.1 - - [14/Apr/2025 17:23:40] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-04-14 17:23:41,022 - INFO - [82998] - werkzeug - 127.0.0.1 - - [14/Apr/2025 17:23:41] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2025-04-14 17:23:41,022 - INFO - [82998] - werkzeug - 127.0.0.1 - - [14/Apr/2025 17:23:41] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2025-04-14 17:23:41,099 - INFO - [82998] - werkzeug - 127.0.0.1 - - [14/Apr/2025 17:23:41] "GET /?__debugger__=yes&cmd=resource&f=console.png&s=xloMJUdhLtEz9QJ5Q3mQ HTTP/1.1" 200 -
+2025-04-14 17:24:03,482 - INFO - [82998] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py', reloading
+2025-04-14 17:24:03,726 - INFO - [82980] - werkzeug -  * Restarting with stat
+2025-04-14 17:26:37,755 - INFO - [82980] - werkzeug -  * Restarting with stat
+2025-04-14 17:27:35,232 - INFO - [82980] - werkzeug -  * Restarting with stat
+2025-04-14 17:28:32,126 - INFO - [82980] - werkzeug -  * Restarting with stat

@@ -1,0 +1,167 @@
+2025-04-13 13:45:16,073 - INFO - [31762] - root - Initializing application
+2025-04-13 13:45:16,073 - INFO - [31762] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-13 13:45:16,231 - INFO - [31762] - root - Database setup successful
+2025-04-13 13:45:16,231 - INFO - [31762] - root - Starting Flask server on port 8586
+2025-04-13 13:45:16,258 - WARNING - [31762] - werkzeug -  * Debugger is active!
+2025-04-13 13:45:16,266 - INFO - [31762] - werkzeug -  * Debugger PIN: 137-071-496
+2025-04-13 13:45:18,807 - INFO - [31762] - root - Received upload request
+2025-04-13 13:45:18,811 - INFO - [31762] - root - Upload parameters: language=ar, streaming=False,conversational mode=True
+2025-04-13 13:45:18,813 - INFO - [31762] - root - File saved to uploads/bf261dbbf0354316a53350f718dd55b4.m4a
+2025-04-13 13:45:18,813 - INFO - [31762] - root - Starting batch processing mode
+2025-04-13 13:45:18,813 - INFO - [31762] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-13 13:45:18,838 - INFO - [31762] - root - Database setup successful
+2025-04-13 13:45:18,838 - INFO - [31762] - root - Database session initialized
+2025-04-13 13:45:18,838 - INFO - [31762] - root - Starting audio preprocessing
+2025-04-13 13:45:21,355 - INFO - [31762] - root - Audio preprocessing completed in 2.5169 seconds
+2025-04-13 13:45:21,355 - INFO - [31762] - root - Starting audio transcription in ar
+2025-04-13 13:45:21,355 - INFO - [31762] - root - Starting parallel audio processing with 3 workers
+2025-04-13 13:45:21,355 - INFO - [31762] - root - Splitting audio file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpzu2gtsef/processed_audio.wav into chunks of 50% of total duration
+2025-04-13 13:45:21,368 - INFO - [31762] - root - Created 3 audio chunks (each 50% of total duration)
+2025-04-13 13:45:21,369 - INFO - [31762] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpzu2gtsef/processed_audio.wav_chunk_0.wav
+2025-04-13 13:45:21,369 - INFO - [31762] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpzu2gtsef/processed_audio.wav_chunk_26186.wav
+2025-04-13 13:45:21,370 - INFO - [31762] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpzu2gtsef/processed_audio.wav_chunk_52372.wav
+2025-04-13 13:45:21,779 - INFO - [31762] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 400 Bad Request"
+2025-04-13 13:45:21,780 - ERROR - [31762] - root - Error processing chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpzu2gtsef/processed_audio.wav_chunk_52372.wav: Audio transcription failed: Error code: 400 - {'error': {'message': 'Audio file is too short. Minimum audio length is 0.01 seconds.', 'type': 'invalid_request_error'}}
+2025-04-13 13:45:21,780 - INFO - [31762] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpzu2gtsef/processed_audio.wav_chunk_52372.wav after error
+2025-04-13 13:45:26,470 - INFO - [31762] - groq._base_client - Retrying request to /openai/v1/audio/transcriptions in 0.424056 seconds
+2025-04-13 13:45:27,514 - INFO - [31762] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-13 13:45:27,516 - INFO - [31762] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpzu2gtsef/processed_audio.wav_chunk_0.wav
+2025-04-13 13:45:27,516 - INFO - [31762] - root - Chunk 0 processing completed
+2025-04-13 13:45:33,106 - INFO - [31762] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-13 13:45:33,110 - INFO - [31762] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpzu2gtsef/processed_audio.wav_chunk_26186.wav
+2025-04-13 13:45:33,110 - INFO - [31762] - root - Chunk 1 processing completed
+2025-04-13 13:45:33,111 - INFO - [31762] - root - Chunk 2 processing completed
+2025-04-13 13:45:33,111 - INFO - [31762] - root - Parallel processing completed, combined text length: 543
+2025-04-13 13:45:33,112 - INFO - [31762] - root - Audio transcription completed in 11.7563 seconds, text length: 543
+2025-04-13 13:45:33,112 - INFO - [31762] - root - Starting LLM processing
+2025-04-13 13:45:39,163 - INFO - [31762] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-13 13:45:39,170 - INFO - [31762] - root - LLM refining processing completed in 6.0578 seconds
+2025-04-13 13:45:39,170 - INFO - [31762] - root - Starting LLM processing
+2025-04-13 13:45:54,698 - ERROR - [31762] - root - Error in batch processing: LLM processing failed: [Errno 54] Connection reset by peer
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpcore/_sync/connection.py", line 101, in handle_request
+    raise exc
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpcore/_sync/connection.py", line 78, in handle_request
+    stream = self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpcore/_sync/connection.py", line 156, in _connect
+    stream = stream.start_tls(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpcore/_backends/sync.py", line 154, in start_tls
+    with map_exceptions(exc_map):
+  File "/opt/homebrew/Cellar/python@3.11/3.11.11/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 54] Connection reset by peer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/llm_service.py", line 60, in translate_to_eng
+    response = fireworks.client.Completion.create(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/fireworks/client/base_completion.py", line 81, in create
+    return cls._create_non_streaming(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/fireworks/client/base_completion.py", line 180, in _create_non_streaming
+    response = client.post_request_non_streaming(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/fireworks/client/api_client.py", line 159, in post_request_non_streaming
+    response = self._client.post(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpx/_client.py", line 1144, in post
+    return self.request(
+           ^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpx/_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+  File "/opt/homebrew/Cellar/python@3.11/3.11.11/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/Users/muhammedamr/Desktop/AHBS/Refined_whisper/venv/lib/python3.11/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 54] Connection reset by peer
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py", line 352, in upload
+    translated_text = LLMService.translate_to_eng(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhammedamr/Desktop/AHBS/Voice recognition/src/llm_service.py", line 72, in translate_to_eng
+    raise Exception(f"LLM processing failed: {str(e)}")
+Exception: LLM processing failed: [Errno 54] Connection reset by peer
+2025-04-13 13:45:54,716 - INFO - [31762] - root - Database session rolled back
+2025-04-13 13:45:54,717 - INFO - [31762] - root - Cleaned up file uploads/bf261dbbf0354316a53350f718dd55b4.m4a
+2025-04-13 13:45:54,718 - INFO - [31762] - root - Removed processed file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpzu2gtsef/processed_audio.wav
+2025-04-13 13:45:54,724 - INFO - [31762] - root - Database session closed
+2025-04-13 13:45:54,726 - INFO - [31762] - werkzeug - 127.0.0.1 - - [13/Apr/2025 13:45:54] "[35m[1mPOST /upload HTTP/1.1[0m" 500 -
+2025-04-13 13:46:03,651 - INFO - [31762] - root - Received upload request
+2025-04-13 13:46:03,656 - INFO - [31762] - root - Upload parameters: language=ar, streaming=False,conversational mode=True
+2025-04-13 13:46:03,657 - INFO - [31762] - root - File saved to uploads/37d90a85407e4e64acb1ddb4e50c768b.m4a
+2025-04-13 13:46:03,657 - INFO - [31762] - root - Starting batch processing mode
+2025-04-13 13:46:03,657 - INFO - [31762] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
+2025-04-13 13:46:03,732 - INFO - [31762] - root - Database setup successful
+2025-04-13 13:46:03,732 - INFO - [31762] - root - Database session initialized
+2025-04-13 13:46:03,733 - INFO - [31762] - root - Starting audio preprocessing
+2025-04-13 13:46:04,444 - INFO - [31762] - root - Audio preprocessing completed in 0.7110 seconds
+2025-04-13 13:46:04,444 - INFO - [31762] - root - Starting audio transcription in ar
+2025-04-13 13:46:04,444 - INFO - [31762] - root - Starting parallel audio processing with 3 workers
+2025-04-13 13:46:04,444 - INFO - [31762] - root - Splitting audio file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpgdp3brim/processed_audio.wav into chunks of 50% of total duration
+2025-04-13 13:46:04,458 - INFO - [31762] - root - Created 3 audio chunks (each 50% of total duration)
+2025-04-13 13:46:04,461 - INFO - [31762] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpgdp3brim/processed_audio.wav_chunk_0.wav
+2025-04-13 13:46:04,461 - INFO - [31762] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpgdp3brim/processed_audio.wav_chunk_26186.wav
+2025-04-13 13:46:04,462 - INFO - [31762] - root - Processing audio chunk: /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpgdp3brim/processed_audio.wav_chunk_52372.wav
+2025-04-13 13:46:04,749 - INFO - [31762] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 400 Bad Request"
+2025-04-13 13:46:04,750 - ERROR - [31762] - root - Error processing chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpgdp3brim/processed_audio.wav_chunk_52372.wav: Audio transcription failed: Error code: 400 - {'error': {'message': 'Audio file is too short. Minimum audio length is 0.01 seconds.', 'type': 'invalid_request_error'}}
+2025-04-13 13:46:04,751 - INFO - [31762] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpgdp3brim/processed_audio.wav_chunk_52372.wav after error
+2025-04-13 13:46:10,804 - INFO - [31762] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-13 13:46:10,806 - INFO - [31762] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpgdp3brim/processed_audio.wav_chunk_0.wav
+2025-04-13 13:46:10,806 - INFO - [31762] - root - Chunk 0 processing completed
+2025-04-13 13:46:12,050 - INFO - [31762] - httpx - HTTP Request: POST https://api.groq.com/openai/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-04-13 13:46:12,054 - INFO - [31762] - root - Removed chunk /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpgdp3brim/processed_audio.wav_chunk_26186.wav
+2025-04-13 13:46:12,054 - INFO - [31762] - root - Chunk 1 processing completed
+2025-04-13 13:46:12,054 - INFO - [31762] - root - Chunk 2 processing completed
+2025-04-13 13:46:12,055 - INFO - [31762] - root - Parallel processing completed, combined text length: 543
+2025-04-13 13:46:12,056 - INFO - [31762] - root - Audio transcription completed in 7.6118 seconds, text length: 543
+2025-04-13 13:46:12,056 - INFO - [31762] - root - Starting LLM processing
+2025-04-13 13:46:17,332 - INFO - [31762] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-13 13:46:17,336 - INFO - [31762] - root - LLM refining processing completed in 5.2803 seconds
+2025-04-13 13:46:17,336 - INFO - [31762] - root - Starting LLM processing
+2025-04-13 13:46:23,117 - INFO - [31762] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-13 13:46:23,122 - INFO - [31762] - root - LLM translation processing completed in 5.7860 seconds
+2025-04-13 13:46:23,122 - INFO - [31762] - root - Starting LLM processing
+2025-04-13 13:46:29,964 - INFO - [31762] - httpx - HTTP Request: POST https://api.fireworks.ai/inference/v1/completions "HTTP/1.1 200 OK"
+2025-04-13 13:46:29,971 - INFO - [31762] - root - LLM processing completed in 6.8482 seconds
+2025-04-13 13:46:29,971 - INFO - [31762] - root - Parsing refined text
+2025-04-13 13:46:29,972 - INFO - [31762] - root - Total processing completed in 26.2396 seconds
+2025-04-13 13:46:29,973 - INFO - [31762] - root - Removed processed file /var/folders/9h/zs4mvmp91456_d2n2hqf6wzc0000gn/T/tmpgdp3brim/processed_audio.wav
+2025-04-13 13:46:29,973 - INFO - [31762] - root - Saving results to database
+2025-04-13 13:46:30,012 - INFO - [31762] - root - Results saved to database with ID 247
+2025-04-13 13:46:30,013 - INFO - [31762] - root - Database session closed
+2025-04-13 13:46:30,014 - INFO - [31762] - werkzeug - 127.0.0.1 - - [13/Apr/2025 13:46:30] "POST /upload HTTP/1.1" 200 -
+2025-04-13 13:46:51,249 - INFO - [31762] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/test.py', reloading
