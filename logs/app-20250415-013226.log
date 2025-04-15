@@ -1,5 +1,0 @@
-2025-04-15 01:32:26,955 - INFO - [35293] - root - Initializing application
-2025-04-15 01:32:26,955 - INFO - [35293] - root - Starting Flask server on port 8586
-2025-04-15 01:32:26,979 - WARNING - [35293] - werkzeug -  * Debugger is active!
-2025-04-15 01:32:26,992 - INFO - [35293] - werkzeug -  * Debugger PIN: 137-071-496
-2025-04-15 01:32:30,309 - INFO - [35293] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/config.py', reloading

@@ -1,7 +1,0 @@
-2025-04-15 01:31:04,424 - INFO - [34828] - root - Initializing application
-2025-04-15 01:31:04,424 - INFO - [34828] - root - Starting Flask server on port 8586
-2025-04-15 01:31:04,444 - WARNING - [34828] - werkzeug -  * Debugger is active!
-2025-04-15 01:31:04,453 - INFO - [34828] - werkzeug -  * Debugger PIN: 137-071-496
-2025-04-15 01:31:05,763 - INFO - [34828] - root - Serving index page
-2025-04-15 01:31:05,768 - INFO - [34828] - werkzeug - 127.0.0.1 - - [15/Apr/2025 01:31:05] "GET / HTTP/1.1" 200 -
-2025-04-15 01:31:42,895 - INFO - [34828] - werkzeug -  * Detected change in '/Users/muhammedamr/Desktop/AHBS/Voice recognition/app_voice.py', reloading
