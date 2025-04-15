@@ -1,6 +1,0 @@
-2025-04-09 15:08:16,514 - INFO - [96860] - root - Initializing application
-2025-04-09 15:08:16,514 - INFO - [96860] - root - Setting up database connection to postgresql://postgres:7987@localhost:5432/Voice_Recognition
-2025-04-09 15:08:16,591 - INFO - [96860] - root - Database setup successful
-2025-04-09 15:08:16,591 - INFO - [96860] - root - Starting Flask server on port 8586
-2025-04-09 15:08:16,612 - WARNING - [96860] - werkzeug -  * Debugger is active!
-2025-04-09 15:08:16,618 - INFO - [96860] - werkzeug -  * Debugger PIN: 137-071-496
