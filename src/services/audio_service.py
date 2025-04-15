@@ -20,10 +20,6 @@ class AudioService:
     def process_batch(audio_file, language, model, conversational_mode):
         """Process audio in batch mode (non-streaming)."""
         process_start = time.time()
-<<<<<<< HEAD
-=======
-        db_record = None
->>>>>>> 78d71f9 (optmizing project strcture)
         file_path = None
         processed_file_path = None
         
@@ -75,28 +71,9 @@ class AudioService:
             # Parse features
             json_data, reasoning = parse_refined_text_voice2(features_with_reasoning)
             
-<<<<<<< HEAD
             
             # Return results
             return jsonify({
-=======
-            # Save to database
-            db_record = ProcessedAudio(
-                filename=audio_file,
-                file_path=file_path,
-                raw_text=raw_text,
-                refined_text=refined_text,
-                json_data=json_data,
-                reasoning=reasoning,
-                voice_processing_time=voice_time,
-                llm_processing_time=llm_time
-            )
-            
-            
-            # Return results
-            return jsonify({
-                "id": db_record.id,
->>>>>>> 78d71f9 (optmizing project strcture)
                 "raw_text": raw_text,
                 "arabic_text": refined_text, 
                 "translation_text": translated_text,
@@ -137,17 +114,6 @@ class AudioService:
         return " ".join(filter(None, results))
     
     @staticmethod
-<<<<<<< HEAD
-    def _split_audio(file_path, chunk_duration_ms=20000):
-        """Split audio file into smaller chunks for parallel processing"""
-        try:
-            logger.info(f"Splitting audio file {file_path} into chunks of {chunk_duration_ms}ms")
-            audio = AudioSegment.from_file(file_path)
-            total_duration = len(audio)
-            chunks = []
-            
-            # Create chunks of specified duration
-=======
     # Audio chunking utility functions
     def _split_audio(file_path, chunk_percentage=100):
         """
@@ -169,7 +135,6 @@ class AudioService:
             
             chunks = []
             # Create chunks of calculated duration
->>>>>>> 78d71f9 (optmizing project strcture)
             for i in range(0, total_duration, chunk_duration_ms):
                 end = min(i + chunk_duration_ms, total_duration)
                 chunk = audio[i:end]
@@ -178,32 +143,20 @@ class AudioService:
                 chunk_path = f"{file_path}_chunk_{i}.wav"
                 chunk.export(chunk_path, format="wav")
                 chunks.append(chunk_path)
-<<<<<<< HEAD
-                
-            logger.info(f"Created {len(chunks)} audio chunks")
-=======
             
             logger.info(f"Created {len(chunks)} audio chunks (each {chunk_percentage}% of total duration)")
->>>>>>> 78d71f9 (optmizing project strcture)
             return chunks
         except Exception as e:
             logger.error(f"Error splitting audio: {str(e)}")
             raise
     
     @staticmethod
-<<<<<<< HEAD
-    def _process_chunk(chunk_path, api_key, language, preprocess = True):
-=======
     def _process_chunk(chunk_path, api_key, language, preprocess=True):
->>>>>>> 78d71f9 (optmizing project strcture)
         """Process a single audio chunk with Whisper"""
         try:
             logger.info(f"Processing audio chunk: {chunk_path}")
             if preprocess:
-<<<<<<< HEAD
                 logger.info(f"Preprocessing chunk {chunk_path}")
-=======
->>>>>>> 78d71f9 (optmizing project strcture)
                 processed_chunk_path = AudioPreprocessingService.preprocess_audio(chunk_path)
                 text = SpeechService.transcribe_audio(processed_chunk_path, api_key, language, preprocess=False)
                 if processed_chunk_path != chunk_path and os.path.exists(processed_chunk_path):
@@ -212,15 +165,12 @@ class AudioService:
             else:
                 text = SpeechService.transcribe_audio(chunk_path, api_key, language, preprocess=False)
                 
-<<<<<<< HEAD
             # Clean up chunk file
             if os.path.exists(chunk_path):
                 os.remove(chunk_path)
                 logger.info(f"Removed chunk {chunk_path}")
                 
-=======
             # Clean up chunk file             
->>>>>>> 78d71f9 (optmizing project strcture)
             return text
         except Exception as e:
             logger.error(f"Error processing chunk {chunk_path}: {str(e)}")
@@ -229,10 +179,6 @@ class AudioService:
                 logger.info(f"Removed chunk {chunk_path} after error")
             return ""
     
-<<<<<<< HEAD
-    
-=======
->>>>>>> 78d71f9 (optmizing project strcture)
     @staticmethod
     def _cleanup_files(file_path, processed_file_path):
         """Clean up temporary files."""

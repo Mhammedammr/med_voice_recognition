@@ -1,14 +1,11 @@
 import os
 from groq import Groq
-<<<<<<< HEAD
 import logging
 
 # Configure logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-=======
 # from .audio_preprocessing import AudioPreprocessingService
->>>>>>> 78d71f9 (optmizing project strcture)
 
 class SpeechService:
     """Service for speech recognition with audio preprocessing."""
@@ -26,7 +23,6 @@ class SpeechService:
             
         Returns:
             Transcribed text
-<<<<<<< HEAD
             
         Raises:
             FileNotFoundError: If the audio file doesn't exist
@@ -53,14 +49,18 @@ class SpeechService:
             
             # Perform transcription
             logger.info(f"Starting transcription for {processed_file_path} in {language}")
-=======
-        """
+            
+        except Exception as e:
+            # Clean up any temporary files in case of error
+            if processed_file_path != audio_file_path and os.path.exists(processed_file_path):
+                os.remove(processed_file_path)
+            raise Exception(f"Audio transcription failed: {str(e)}")
+        
         try:
             processed_file_path = audio_file_path
             
             # Perform transcription with Groq/Whisper
             client = Groq(api_key=api_key)
->>>>>>> 78d71f9 (optmizing project strcture)
             with open(processed_file_path, "rb") as file:
                 transcription = client.audio.transcriptions.create(
                     file=(processed_file_path, file.read()),
@@ -70,7 +70,6 @@ class SpeechService:
                     temperature=0.0
                 )
             
-<<<<<<< HEAD
             logger.info(f"Transcription completed successfully: {len(transcription.text)} characters")
             return transcription.text
             
@@ -88,16 +87,10 @@ class SpeechService:
             if temp_file_created and os.path.exists(processed_file_path):
                 logger.debug(f"Cleaning up temporary file: {processed_file_path}")
                 os.remove(processed_file_path)
-=======
             # Clean up temporary processed file if it's different from the original
             if processed_file_path != audio_file_path and os.path.exists(processed_file_path):
                 os.remove(processed_file_path)
                 
             return transcription.text
             
-        except Exception as e:
-            # Clean up any temporary files in case of error
-            if processed_file_path != audio_file_path and os.path.exists(processed_file_path):
-                os.remove(processed_file_path)
-            raise Exception(f"Audio transcription failed: {str(e)}")
->>>>>>> 78d71f9 (optmizing project strcture)
+

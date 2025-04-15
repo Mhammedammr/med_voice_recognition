@@ -1,14 +1,10 @@
 import os
 import uuid
-<<<<<<< HEAD
 import shutil
-=======
->>>>>>> 78d71f9 (optmizing project strcture)
 
 class FileService:
     """Service for file handling."""
     
-<<<<<<< HEAD
     @staticmethod
     def save_file(file, upload_folder):
         """Save uploaded file with a unique filename."""
@@ -34,7 +30,6 @@ class FileService:
                 return file_path
             except Exception as e:
                 raise Exception(f"Failed to save file: {str(e)}")
-=======
     def save_file(file, upload_folder):
         """Save uploaded file to the specified folder."""
         # Check if file is a string (path) or a file object
@@ -47,7 +42,6 @@ class FileService:
             file_path = os.path.join(upload_folder, unique_filename)
             file.save(file_path)
             return file_path
->>>>>>> 78d71f9 (optmizing project strcture)
     
     @staticmethod
     def cleanup_file(file_path):

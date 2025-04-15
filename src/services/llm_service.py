@@ -1,5 +1,4 @@
 import fireworks.client
-<<<<<<< HEAD
 import logging
 from src.utils.prompt import *
 
@@ -11,15 +10,6 @@ class LLMService:
     """Service for LLM processing."""
     
     @staticmethod
-=======
-from src.utils.prompt import *
-import logging
-
-# Get a logger for this module
-logger = logging.getLogger(__name__)
-
-class LLMService:
-
     def refine_ar_transcription(raw_text, api_key, model, conversational_mode=False):
         """Process Arabic voice transcription with LLM."""
         return LLMService.process_text(raw_text, api_key, model, "refine_arabic", conversational_mode)
@@ -35,7 +25,6 @@ class LLMService:
         return LLMService.process_text(translated_text, api_key, model, "extract", conversational_mode)
     
 
->>>>>>> 78d71f9 (optmizing project strcture)
     def _get_model_account(model):
         """Get the appropriate model account based on model name."""
         if model == "deepseek":
@@ -43,11 +32,7 @@ class LLMService:
         else:
             return "accounts/fireworks/models/llama4-maverick-instruct-basic"
     
-<<<<<<< HEAD
     @staticmethod
-=======
-
->>>>>>> 78d71f9 (optmizing project strcture)
     def _get_prompt(prompt_type, model, text, conversational_mode=False):
         """Get the appropriate prompt based on type, model and mode."""
         if prompt_type == "refine_arabic":
@@ -65,11 +50,7 @@ class LLMService:
         else:
             raise ValueError(f"Unknown prompt type: {prompt_type}")
     
-<<<<<<< HEAD
     @staticmethod
-=======
-
->>>>>>> 78d71f9 (optmizing project strcture)
     def _call_llm_api(api_key, model_account, prompt, temperature=0.3):
         """Make API call to the LLM service."""
         fireworks.client.api_key = api_key
@@ -92,11 +73,7 @@ class LLMService:
             logger.error(f"LLM API call failed: {str(e)}")
             raise Exception(f"LLM processing failed: {str(e)}")
     
-<<<<<<< HEAD
     @staticmethod
-=======
-
->>>>>>> 78d71f9 (optmizing project strcture)
     def process_text(text, api_key, model, prompt_type, conversational_mode=False):
         """Generic method to process text with LLM."""
         model_account = LLMService._get_model_account(model)
@@ -104,8 +81,7 @@ class LLMService:
         
         result = LLMService._call_llm_api(api_key, model_account, prompt)
         return result if result else text
-<<<<<<< HEAD
-    
+        
     @staticmethod
     def refine_ar_transcription(raw_text, api_key, model, conversational_mode=False):
         """Process Arabic voice transcription with LLM."""
@@ -120,7 +96,6 @@ class LLMService:
     def extract_features(translated_text, api_key, model, conversational_mode=False):
         """Extract features from translated text with LLM."""
         return LLMService.process_text(translated_text, api_key, model, "extract", conversational_mode)
-=======
 
     # @staticmethod
     # def process_text_data(raw_text, json_text, api_key):
@@ -295,4 +270,3 @@ class LLMService:
 #                 return raw_text
 #         except Exception as e:
 #             raise Exception(f"LLM processing failed: {str(e)}")
->>>>>>> 78d71f9 (optmizing project strcture)

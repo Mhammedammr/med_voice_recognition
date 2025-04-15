@@ -68,7 +68,6 @@ def upload():
         response = AudioService.process_batch(file_path, language, model, conversational_mode)
         response_data = response.get_json()
 
-        record_id = response_data["id"]
         raw_text = response_data["raw_text"]
         arabic_text = response_data["arabic_text"]
         translation = response_data["translation_text"]
@@ -81,7 +80,6 @@ def upload():
                 
         # Return the results
         return jsonify({
-            "id": record_id,
             "raw_text": raw_text,
             "arabic_text": arabic_text,
             "translation_text": translation,
