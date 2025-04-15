@@ -3,10 +3,7 @@ import time
 from config import Config
 from src.services.audio_service import AudioService
 from src.services.file_service import FileService
-<<<<<<< HEAD
-=======
 import pandas as pd
->>>>>>> 78d71f9 (optmizing project strcture)
 from src.utils import utils
 
 # Initialize logger
@@ -16,8 +13,6 @@ logger = utils.setup_logger()
 app = Flask(__name__)
 app.config.from_object(Config)
 
-<<<<<<< HEAD
-=======
 
 def load_forms_dataframe():
     try:
@@ -30,7 +25,6 @@ def load_forms_dataframe():
         return pd.DataFrame(columns=['name', 'json_format'])
 
 
->>>>>>> 78d71f9 (optmizing project strcture)
 @app.route("/")
 def index():
     """Render the application frontend."""
@@ -41,6 +35,7 @@ def index():
 def upload():
     """Handle file uploads and processing."""
     logger.info("Received upload request")
+    
     # Check if a file is uploaded
     if "audio" not in request.files:
         logger.warning("No audio file uploaded")
@@ -50,12 +45,7 @@ def upload():
     language = request.form.get('language', 'en')
     model = request.form.get('model', 'deepseek')
     conversational_mode = request.form.get('isConversation') == 'on'
-<<<<<<< HEAD
-    form_name = request.form.get('form_name', '')  # Get form name if provided
-    
-=======
     # print(conversational_mode)
->>>>>>> 78d71f9 (optmizing project strcture)
     logger.info(f"Upload parameters: language={language} ,conversational mode={conversational_mode}")
     
     # For recorded audio, set a default filename if none is provided
@@ -70,33 +60,14 @@ def upload():
     except Exception as e:
         logger.error(f"Error saving file: {str(e)}", exc_info=True)
         return jsonify({"error": str(e)}), 500
-    
+        
     try:
         logger.info("Starting batch processing mode")
-<<<<<<< HEAD
-        # Process the uploaded file
-        response = AudioService.process_batch(file_path, language, model, conversational_mode)
-        response_data = response.get_json()
-        
-        # Extract data from the response
-        raw_text = response_data["raw_text"]
-        arabic_text = response_data["arabic_text"]
-        translation = response_data("translation_text")
-        json_data = response_data["json_data"]
-        reasoning = response_data["reasoning"]
-        voice_time = response_data["voice_processing_time"]
-        llm_time = response_data["llm_processing_time"]
-        
-                
-        # Return the results
-        return jsonify({
-=======
         
         # Process the uploaded file
         response = AudioService.process_batch(file_path, language, model, conversational_mode)
         response_data = response.get_json()
 
-        record_id = response_data["id"]
         raw_text = response_data["raw_text"]
         arabic_text = response_data["arabic_text"]
         translation = response_data["translation_text"]
@@ -109,35 +80,22 @@ def upload():
                 
         # Return the results
         return jsonify({
-            "id": record_id,
->>>>>>> 78d71f9 (optmizing project strcture)
             "raw_text": raw_text,
             "arabic_text": arabic_text,
             "translation_text": translation,
             "json_data": json_data,
             "reasoning": reasoning,
-<<<<<<< HEAD
-=======
             "preprocessing_time": preprocessing_time,
->>>>>>> 78d71f9 (optmizing project strcture)
             "voice_processing_time": voice_time,
             "llm_processing_time": llm_time
         })
     except Exception as e:
         logger.error(f"Error in batch processing: {str(e)}", exc_info=True)
         return jsonify({"error": str(e)}), 500
-<<<<<<< HEAD
-    
-if __name__ == "__main__":
-    # Ensure the database tables exist
-    logger.info("Initializing application")
-    
-=======
 
 
 if __name__ == "__main__":
     # Ensure the database tables exist
     logger.info("Initializing application")
->>>>>>> 78d71f9 (optmizing project strcture)
     logger.info("Starting Flask server on port 8586")
     app.run(debug=Config.DEBUG, port=Config.PORT)

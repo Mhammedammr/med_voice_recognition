@@ -13,6 +13,7 @@ venv/
 *.xls
 *.db
 *.sqlite3
+test.py
 
 # Data folders
 uploads/

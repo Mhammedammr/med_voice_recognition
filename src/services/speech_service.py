@@ -64,10 +64,10 @@ class SpeechService:
             with open(processed_file_path, "rb") as file:
                 transcription = client.audio.transcriptions.create(
                     file=(processed_file_path, file.read()),
-                    model="whisper-large-v3-turbo",
+                    model="whisper-large-v3",
                     response_format="json",
                     language=language,
-                    temperature=0.0
+                    temperature=0.3
                 )
             
             logger.info(f"Transcription completed successfully: {len(transcription.text)} characters")

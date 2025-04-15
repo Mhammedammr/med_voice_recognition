@@ -26,7 +26,6 @@ class AudioService:
         try:
             # Save file
             file_path = FileService.save_file(audio_file, current_app.config["UPLOAD_FOLDER"])
-            logger.info(f"File saved: {file_path}")
             
             # Step 1: Preprocess audio
             preprocess_start = time.time()
@@ -41,7 +40,9 @@ class AudioService:
                 language
             )
             voice_time = time.time() - voice_start
-            
+            logger.info(f"transcription total time: {voice_time}")
+            print(raw_text)
+
             # Step 3: Refine transcription
             refine_start = time.time()
             refined_text = LLMService.refine_ar_transcription(
@@ -50,7 +51,8 @@ class AudioService:
                 model,
                 conversational_mode
             )
-            
+            print(refined_text)
+
             # Step 4: Translate to English
             translated_text = LLMService.translate_to_eng(
                 refined_text,
@@ -58,7 +60,8 @@ class AudioService:
                 model,
                 conversational_mode
             )
-            
+            print(translated_text)
+
             # Step 5: Extract features
             features_with_reasoning = LLMService.extract_features(
                 translated_text,
@@ -67,10 +70,13 @@ class AudioService:
                 conversational_mode
             )
             llm_time = time.time() - refine_start
-            
+            logger.info(f"llm total time: {llm_time}")
+
             # Parse features
             json_data, reasoning = parse_refined_text_voice2(features_with_reasoning)
             
+            print(reasoning)
+            print(json_data)
             
             # Return results
             return jsonify({

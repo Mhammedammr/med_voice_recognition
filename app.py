@@ -5,9 +5,10 @@ from src.services.audio_service import AudioService
 from src.services.file_service import FileService
 import pandas as pd
 from src.utils import utils
+import logging
 
 # Initialize logger
-logger = utils.setup_logger()
+logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)

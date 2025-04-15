@@ -10,7 +10,7 @@ def get_refine_arabic_prompt_deepseek(raw_text):
 
 def get_refine_arabic_prompt_deepseek_conv(raw_text):
     return f"""
-    Analyze this Arabic medical conversation and format it properly:
+    Analyze this Arabic medical conversation in differnet dialect and format it properly:
     1. Identify who is speaking: the doctor typically asks questions, performs examinations, gives diagnoses, and suggests treatments, while the patient describes symptoms, complaints, and medical history.
     2. Label each speaker as **DOCTOR:** or **PATIENT:** before their dialogue.
     3. Return only the properly formatted Arabic dialogue with speaker labels.
@@ -88,7 +88,7 @@ def get_refine_arabic_prompt_llama(raw_text):
 def get_refine_arabic_prompt_llama_conv(raw_text):
     return f"""
     <SYSTEM>
-    You are an expert Arabic medical language specialist. Your task is to accurately format Arabic medical conversations.
+    You are an expert Arabic medical language specialist. Your task is to accurately format Arabic medical conversations with differnet dialect.
     </SYSTEM>
     
     <HUMAN>

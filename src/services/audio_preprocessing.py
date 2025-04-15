@@ -35,6 +35,10 @@ class AudioPreprocessingService:
         
         # Load audio file using librosa
         try:
+            # Check if input_file_path is None or empty
+            if not input_file_path:
+                raise ValueError("Input file path is None or empty")
+            
             # Use pydub to convert any format to WAV first if needed
             if not input_file_path.lower().endswith('.wav'):
                 audio = AudioSegment.from_file(input_file_path)
