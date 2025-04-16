@@ -42,29 +42,44 @@ class AudioService:
             voice_time = time.time() - voice_start
             logger.info(f"transcription total time: {voice_time}")
             print(raw_text)
+            if language == "ar":
+                # Step 3: Refine transcription
+                refine_start = time.time()
+                refined_text = LLMService.refine_ar_transcription(
+                    raw_text,
+                    current_app.config["FIREWORKS_API_KEY"],
+                    model,
+                    conversational_mode
+                )
+                print(refined_text)
 
-            # Step 3: Refine transcription
-            refine_start = time.time()
-            refined_text = LLMService.refine_ar_transcription(
-                raw_text,
-                current_app.config["FIREWORKS_API_KEY"],
-                model,
-                conversational_mode
-            )
-            print(refined_text)
+                # Step 4: Translate to English
+                translated_text = LLMService.translate_to_eng(
+                    refined_text,
+                    current_app.config["FIREWORKS_API_KEY"],
+                    model,
+                    conversational_mode
+                )
+                end_text = translated_text
+                print(translated_text)
+            else:
+                # Step 3: Refine transcription
+                refine_start = time.time()
+                refined_text = LLMService.refine_en_transcription(
+                    raw_text,
+                    current_app.config["FIREWORKS_API_KEY"],
+                    model,
+                    conversational_mode
+                )
+                end_text = refined_text
+                print(refined_text)
 
-            # Step 4: Translate to English
-            translated_text = LLMService.translate_to_eng(
-                refined_text,
-                current_app.config["FIREWORKS_API_KEY"],
-                model,
-                conversational_mode
-            )
-            print(translated_text)
+                # Step 4: Translate 
+                translated_text = "there is no translation"
 
             # Step 5: Extract features
             features_with_reasoning = LLMService.extract_features(
-                translated_text,
+                end_text,
                 current_app.config["FIREWORKS_API_KEY"],
                 model,
                 conversational_mode
@@ -74,7 +89,7 @@ class AudioService:
 
             # Parse features
             json_data, reasoning = parse_refined_text_voice2(features_with_reasoning)
-            
+
             print(reasoning)
             print(json_data)
             
@@ -113,6 +128,7 @@ class AudioService:
             for i, future in futures:
                 try:
                     results[i] = future.result()
+                    print(results)
                 except Exception as e:
                     logger.error(f"Chunk {i} failed: {str(e)}")
                     results[i] = ""

@@ -10,13 +10,18 @@ def get_refine_arabic_prompt_deepseek(raw_text):
 
 def get_refine_arabic_prompt_deepseek_conv(raw_text):
     return f"""
-    Analyze this Arabic medical conversation in differnet dialect and format it properly:
-    1. Identify who is speaking: the doctor typically asks questions, performs examinations, gives diagnoses, and suggests treatments, while the patient describes symptoms, complaints, and medical history.
-    2. Label each speaker as **DOCTOR:** or **PATIENT:** before their dialogue.
-    3. Return only the properly formatted Arabic dialogue with speaker labels.
+    Analyze this Arabic medical conversation in different dialects and format it properly it usually starts with greeting from one of the speakers:
+    
+    1. Identify speakers based on these clear role indicators:
+       - DOCTOR: The person who asks questions, examines the patient, provides diagnoses, and recommends treatments
+       - PATIENT: The person who describes symptoms, answers questions, explains concerns, and shares their medical history
+    
+    2. Format the conversation by labeling each speaker as **DOCTOR:** or **PATIENT:** before their dialogue
+    
+    3. Return ONLY the properly formatted Arabic dialogue with speaker labels, without any additional commentary or explanation
     
     ORIGINAL TEXT:
-\"\"\"{raw_text}\"\"\"
+    \"\"\"{raw_text}\"\"\"
     """
 
 
@@ -75,59 +80,6 @@ def get_extraction_prompt_deepseek(translated_text):
     """
 
 
-def get_refine_arabic_prompt_llama(raw_text):
-    return f"""
-            You are a medical specialist. Correct this Arabic text while preserving its meaning.
-            Only return the corrected Arabic text with no additional text or explanations.
-
-            ORIGINAL TEXT:
-            \"\"\"{raw_text}\"\"\"
-            """
-
-
-def get_refine_arabic_prompt_llama_conv(raw_text):
-    return f"""
-    <SYSTEM>
-    You are an expert Arabic medical language specialist. Your task is to accurately format Arabic medical conversations with differnet dialect.
-    </SYSTEM>
-    
-    <HUMAN>
-    Format this Arabic medical conversation:
-    1. Identify the doctor (who asks questions, examines, diagnoses, and recommends treatments)
-    2. Identify the patient (who describes symptoms, answers questions, and explains health concerns)
-    3. Label each speaker with **DOCTOR:** or **PATIENT:** based on their role
-    4. Maintain all original Arabic content and meaning
-    5. Return only the formatted conversation without explanations or additional text
-
-    Original text:
-    {raw_text}
-    </HUMAN>
-    
-    <ASSISTANT>
-    """
-
-
-def get_translation_prompt_llama(refined_text):
-    return f"""
-            Translate this Arabic medical text to English.
-            Return only the English translation with no additional text.
-
-            ARABIC TEXT:
-            \"\"\"{refined_text}\"\"\"
-            """
-
-
-def get_translation_prompt_llama_conv(refined_text):
-    return f"""
-            Translate this Arabic medical conversation to English.
-            Preserve **DOCTOR:** and **PATIENT:** labels if present.
-            Return only the English translation with no additional text.
-
-            ARABIC TEXT:
-            \"\"\"{refined_text}\"\"\"
-            """
-
-
 def get_extraction_prompt_llama(translated_text):
     return f"""
     Extract patient information into JSON format and provide brief analysis.
@@ -163,3 +115,83 @@ def get_extraction_prompt_llama(translated_text):
     TEXT TO ANALYZE:
     \"\"\"{translated_text}\"\"\"
     """
+def get_refine_english_prompt_deepseek(translated_text):
+    return f"""
+    Correct the grammar and structure of this English medical text.
+    Return only the corrected English text with no additional explanations.
+    ORIGINAL TEXT:
+\"\"\"{translated_text}\"\"\"
+    """
+
+def get_refine_english_prompt_deepseek_conv(translated_text):
+    return f"""
+    Refine this English medical conversation while preserving speaker labels:
+    1. Fix any grammatical errors or awkward phrasing
+    2. Ensure medical terminology is used correctly
+    3. Maintain the conversational flow and natural dialogue
+    4. Preserve the **DOCTOR:** and **PATIENT:** labels
+    
+    Return ONLY the refined English conversation without any additional commentary.
+    ORIGINAL TEXT:
+\"\"\"{translated_text}\"\"\"
+    """
+
+def get_refine_arabic_prompt_llama(raw_text):
+    return f"""
+SYSTEM: You are a medical language processor that outputs ONLY corrected text with NO explanations.
+
+USER: Correct this Arabic medical text:
+\"\"\"{raw_text}\"\"\"
+
+ASSISTANT:
+"""
+
+def get_refine_arabic_prompt_llama_conv(raw_text):
+    return f"""
+SYSTEM: You are an Arabic medical transcription system that outputs ONLY formatted text with speaker labels. Any additional text will trigger system errors.
+
+USER: Format with **DOCTOR:** and **PATIENT:** labels:
+\"\"\"{raw_text}\"\"\"
+
+ASSISTANT:
+"""
+
+def get_translation_prompt_llama(refined_text):
+    return f"""
+SYSTEM: You are a translation system that outputs ONLY the English translation with NO explanations.
+
+USER: Translate to English:
+\"\"\"{refined_text}\"\"\"
+
+ASSISTANT:
+"""
+
+def get_translation_prompt_llama_conv(refined_text):
+    return f"""
+SYSTEM: You are a translation system that outputs ONLY the English translation with speaker labels preserved. No explanations.
+
+USER: Translate with **DOCTOR:** and **PATIENT:** labels:
+\"\"\"{refined_text}\"\"\"
+
+ASSISTANT:
+"""
+
+def get_refine_english_prompt_llama(translated_text):
+    return f"""
+SYSTEM: You are a text processor that outputs ONLY the corrected English text with NO explanations.
+
+USER: Correct this medical text:
+\"\"\"{translated_text}\"\"\"
+
+ASSISTANT:
+"""
+
+def get_refine_english_prompt_llama_conv(translated_text):
+    return f"""
+SYSTEM: You are a text processor that outputs ONLY the refined English conversation with speaker labels. No explanations.
+
+USER: Refine this conversation:
+\"\"\"{translated_text}\"\"\"
+
+ASSISTANT:
+"""

@@ -160,7 +160,7 @@
 
             <!-- Arabic Text -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Arabic Text</h2>
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Refined Text</h2>
                 <div id="arabicText" class="bg-gray-50 p-4 rounded-lg text-gray-700 whitespace-pre-wrap"></div>
             </div>
 
@@ -327,23 +327,129 @@
             }
             
             // Function to toggle recording state
-            async function toggleRecording() {
-                if (!isRecording) {
-                    try {
-                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                        startRecording(stream);
-                    } catch (err) {
-                        console.error('Error accessing microphone:', err);
-                        recordingStatus.textContent = 'Error accessing microphone. Please check permissions.';
-                        recordingStatus.classList.add('text-red-500');
-                        
-                        // Show toast notification for microphone error
-                        showToastNotification('Microphone access denied. Please check your browser permissions.', 'error');
-                    }
-                } else {
-                    stopRecording();
-                }
+// Improved microphone access function
+async function accessMicrophone() {
+    try {
+        // Request both audio and optional video (false)
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true
+            },
+            video: false
+        });
+        
+        // Log success for debugging
+        console.log('Microphone access successful');
+        
+        // Return the stream for further use
+        return stream;
+    } catch (error) {
+        // Provide more detailed error handling based on error type
+        if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+            console.error('Microphone permission denied by user:', error);
+            showToastNotification('Microphone access denied. Please allow microphone access in your browser settings.', 'error');
+        } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+            console.error('No microphone found:', error);
+            showToastNotification('No microphone detected. Please connect a microphone and try again.', 'error');
+        } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+            console.error('Microphone is already in use or not readable:', error);
+            showToastNotification('Could not access microphone. It may be in use by another application.', 'error');
+        } else if (error.name === 'OverconstrainedError') {
+            console.error('Microphone constraints cannot be satisfied:', error);
+            showToastNotification('Your microphone does not meet the required constraints.', 'error');
+        } else if (error.name === 'TypeError') {
+            console.error('Invalid constraints or parameters:', error);
+            showToastNotification('Technical error: Invalid microphone configuration.', 'error');
+        } else {
+            console.error('Unexpected microphone error:', error);
+            showToastNotification('An unexpected error occurred accessing your microphone.', 'error');
+        }
+        
+        // Rethrow for upstream handling
+        throw error;
+    }
+}
+
+    // Modified toggleRecording function to use the new accessMicrophone function
+    async function toggleRecording() {
+        if (!isRecording) {
+            try {
+                // Show indicator that we're attempting to access the microphone
+                recordingStatus.textContent = 'Accessing microphone...';
+                
+                // Get the audio stream
+                const stream = await accessMicrophone();
+                startRecording(stream);
+            } catch (err) {
+                // Error already handled in accessMicrophone
+                recordingStatus.textContent = 'Error accessing microphone. Please check permissions.';
+                recordingStatus.classList.add('text-red-500');
             }
+        } else {
+            stopRecording();
+        }
+    }
+
+    // Browser compatibility check function
+    function checkBrowserCompatibility() {
+        const compatibility = {
+            getUserMedia: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+            mediaRecorder: typeof MediaRecorder !== 'undefined',
+            audioContext: typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined'
+        };
+        
+        const isCompatible = Object.values(compatibility).every(Boolean);
+        
+        if (!isCompatible) {
+            // Show browser compatibility warning
+            const incompatibleFeatures = Object.entries(compatibility)
+                .filter(([_, supported]) => !supported)
+                .map(([feature]) => feature);
+                
+            showToastNotification(
+                `Your browser might not fully support audio recording. Missing: ${incompatibleFeatures.join(', ')}. 
+                Please try using Chrome, Firefox, or Edge.`, 
+                'warning',
+                8000
+            );
+        }
+        
+        return isCompatible;
+    }
+
+    // Call this function when the page loads to check compatibility
+    document.addEventListener('DOMContentLoaded', function() {
+        checkBrowserCompatibility();
+        
+        // Rest of your initialization code...
+    });
+
+    // Enhanced version of your showToastNotification function with duration parameter
+    function showToastNotification(message, type = 'info', duration = 3000) {
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg text-white transition-opacity duration-300 ${
+            type === 'error' ? 'bg-red-600' :
+            type === 'success' ? 'bg-green-600' :
+            type === 'warning' ? 'bg-yellow-600' :
+            'bg-blue-600'
+        }`;
+        toast.textContent = message;
+        toast.style.zIndex = '9999';
+        
+        document.body.appendChild(toast);
+        
+        // Fade out and remove after specified duration
+        setTimeout(() => {
+            toast.classList.add('opacity-0');
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 300);
+        }, duration);
+    }
             
             // Function to start recording
             function startRecording(stream) {

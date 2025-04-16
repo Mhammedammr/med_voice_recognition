@@ -10,6 +10,12 @@ class LLMService:
     """Service for LLM processing."""
     
     @staticmethod
+    def refine_en_transcription(raw_text, api_key, model, conversational_mode=False):
+        """Process English voice transcription with LLM."""
+        return LLMService.process_text(raw_text, api_key, model, "refine_english", conversational_mode)
+    
+
+    @staticmethod
     def refine_ar_transcription(raw_text, api_key, model, conversational_mode=False):
         """Process Arabic voice transcription with LLM."""
         return LLMService.process_text(raw_text, api_key, model, "refine_arabic", conversational_mode)
@@ -35,6 +41,12 @@ class LLMService:
     @staticmethod
     def _get_prompt(prompt_type, model, text, conversational_mode=False):
         """Get the appropriate prompt based on type, model and mode."""
+        if prompt_type == "refine_english":
+            if conversational_mode:
+                return get_refine_english_prompt_deepseek_conv(text) if model == "deepseek" else get_refine_english_prompt_llama_conv(text)
+            else:
+                return get_refine_english_prompt_deepseek(text) if model == "deepseek" else get_refine_english_prompt_llama(text)
+ 
         if prompt_type == "refine_arabic":
             if conversational_mode:
                 return get_refine_arabic_prompt_deepseek_conv(text) if model == "deepseek" else get_refine_arabic_prompt_llama_conv(text)

@@ -67,7 +67,7 @@ class SpeechService:
                     model="whisper-large-v3",
                     response_format="json",
                     language=language,
-                    temperature=0.3
+                    temperature=0.1
                 )
             
             logger.info(f"Transcription completed successfully: {len(transcription.text)} characters")
