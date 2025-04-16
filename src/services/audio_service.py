@@ -115,9 +115,24 @@ class AudioService:
             raise
     
     @staticmethod
-    def _process_audio_parallel(file_path, api_key, language, max_workers=3):
-        """Process audio in parallel chunks."""
-        chunks = AudioService._split_audio(file_path)
+    def _process_audio_parallel(file_path, api_key, language, max_workers=3, chunk_percentage=100):
+        """Process audio in parallel chunks or as a single file based on chunk percentage."""
+        # If chunk_percentage is 100 or close to it, process the whole file directly
+        if chunk_percentage >= 100:
+            logger.info("Processing audio as a single file (no chunking)")
+            return AudioService._process_chunk(file_path, api_key, language)
+        
+        # Otherwise, split into chunks and process in parallel
+        chunks = AudioService._split_audio(file_path, chunk_percentage)
+        
+        # If only one chunk was created, process it directly
+        if len(chunks) <= 1:
+            if chunks:
+                result = AudioService._process_chunk(chunks[0], api_key, language)
+                return result
+            return ""
+        
+        # Multiple chunks - process in parallel
         results = [None] * len(chunks)
         
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -128,13 +143,14 @@ class AudioService:
             for i, future in futures:
                 try:
                     results[i] = future.result()
-                    print(results)
+                    print(f"Chunk {i} processed successfully")
                 except Exception as e:
                     logger.error(f"Chunk {i} failed: {str(e)}")
                     results[i] = ""
         
         return " ".join(filter(None, results))
-    
+
+
     @staticmethod
     # Audio chunking utility functions
     def _split_audio(file_path, chunk_percentage=100):

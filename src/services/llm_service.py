@@ -38,9 +38,12 @@ class LLMService:
         else:
             return "accounts/fireworks/models/llama4-maverick-instruct-basic"
     
-    @staticmethod
+
     def _get_prompt(prompt_type, model, text, conversational_mode=False):
         """Get the appropriate prompt based on type, model and mode."""
+        if prompt_type == "general_refine":
+            return get_refine_arabic_prompt_deepseek(text) if model == "deepseek" else get_refine_arabic_prompt_llama(text)
+
         if prompt_type == "refine_english":
             if conversational_mode:
                 return get_refine_english_prompt_deepseek_conv(text) if model == "deepseek" else get_refine_english_prompt_llama_conv(text)
@@ -85,12 +88,14 @@ class LLMService:
             logger.error(f"LLM API call failed: {str(e)}")
             raise Exception(f"LLM processing failed: {str(e)}")
     
-    @staticmethod
     def process_text(text, api_key, model, prompt_type, conversational_mode=False):
         """Generic method to process text with LLM."""
         model_account = LLMService._get_model_account(model)
+        if prompt_type == "refine_arabic":
+            prompt1 = LLMService._get_prompt("general_refine", model, text, conversational_mode)
+            result1 = LLMService._call_llm_api(api_key, model_account, prompt1)
+            text = result1
         prompt = LLMService._get_prompt(prompt_type, model, text, conversational_mode)
-        
         result = LLMService._call_llm_api(api_key, model_account, prompt)
         return result if result else text
         
