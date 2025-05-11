@@ -1,6 +1,6 @@
 def get_refine_arabic_prompt_deepseek(raw_text):
     return f"""
-    Correct the grammar and structure of this Arabic medical text. 
+    Correct the grammar and structure of this Arabic medical text and try to ignore the names of the speakers. 
     Return only the corrected Arabic text with no additional explanations.
 
     ORIGINAL TEXT:

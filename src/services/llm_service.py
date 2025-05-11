@@ -42,7 +42,7 @@ class LLMService:
     def _get_prompt(prompt_type, model, text, conversational_mode=False):
         """Get the appropriate prompt based on type, model and mode."""
         if prompt_type == "general_refine":
-            return get_refine_arabic_prompt_deepseek(text) if model == "deepseek" else get_refine_arabic_prompt_llama(text)
+            return get_refine_arabic_prompt_llama(text) if model == "deepseek" else get_refine_arabic_prompt_llama(text)
 
         if prompt_type == "refine_english":
             if conversational_mode:
@@ -61,7 +61,7 @@ class LLMService:
             else:
                 return get_translation_prompt_deepseek(text) if model == "deepseek" else get_translation_prompt_llama(text)
         elif prompt_type == "extract":
-            return get_extraction_prompt_deepseek(text) if model == "deepseek" else get_extraction_prompt_llama(text)
+            return get_extraction_prompt_llama(text) if model == "deepseek" else get_extraction_prompt_llama(text)
         else:
             raise ValueError(f"Unknown prompt type: {prompt_type}")
     

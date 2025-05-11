@@ -1,6 +1,8 @@
 import os
 from groq import Groq
 import logging
+from fireworks.client.audio import AudioInference
+import requests
 
 # Configure logger
 logging.basicConfig(level=logging.INFO)
@@ -45,7 +47,7 @@ class SpeechService:
                 logger.info(f"Audio preprocessing applied: {audio_file_path} → {processed_file_path}")
             
             # Initialize Groq client
-            client = Groq(api_key=api_key)
+            # client = Groq(api_key=api_key)
             
             # Perform transcription
             logger.info(f"Starting transcription for {processed_file_path} in {language}")
@@ -58,20 +60,27 @@ class SpeechService:
         
         try:
             processed_file_path = audio_file_path
-            
-            # Perform transcription with Groq/Whisper
-            client = Groq(api_key=api_key)
-            with open(processed_file_path, "rb") as file:
-                transcription = client.audio.transcriptions.create(
-                    file=(processed_file_path, file.read()),
-                    model="whisper-large-v3",
-                    response_format="json",
-                    language=language,
-                    temperature=0.0
-                )
-            
-            logger.info(f"Transcription completed successfully: {len(transcription.text)} characters")
-            return transcription.text
+            audio_file = open(processed_file_path, "rb")
+            # # Perform transcription with Groq/Whisper
+            # client = Groq(api_key=api_key)
+            # with open(processed_file_path, "rb") as file:
+            #     transcription = client.audio.transcriptions.create(
+            #         file=(processed_file_path, file.read()),
+            #         model="whisper-large-v3",
+            #         response_format="json",
+            #         language=language,
+            #         temperature=0.0
+            #     )
+
+            response = requests.post(
+            "https://api.fireworks.ai/inference/v1/audio/transcriptions",
+            headers={"Authorization": f"Bearer {api_key}"},
+            files={"file": audio_file},
+            data={"model": "whisper-v3", "language": language}
+            )
+            raw_text = response.json()["text"]
+            print(f"Transcription completed successfully: {len(raw_text)} characters, raw_text: {raw_text}")
+            return raw_text
             
         except FileNotFoundError as e:
             logger.error(f"File error: {str(e)}")
@@ -90,7 +99,7 @@ class SpeechService:
             # Clean up temporary processed file if it's different from the original
             if processed_file_path != audio_file_path and os.path.exists(processed_file_path):
                 os.remove(processed_file_path)
-                
-            return transcription.text
+
+            return raw_text
             
 

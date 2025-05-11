@@ -1,19 +1,32 @@
-from flask import Flask, request, jsonify, render_template
+from fastapi import FastAPI, UploadFile, File, Form, Request
+from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 import time
+import pandas as pd
+import logging
+from typing import Optional
+import os
+import uvicorn
+import json
+from datetime import datetime
+
+# Import your services
 from config import Config
 from src.services.audio_service import AudioService
-from src.services.file_service import FileService
-import pandas as pd
-from src.utils import utils
-import logging
+from database import DatabaseService
 
 # Initialize logger
 logger = logging.getLogger(__name__)
 
-# Initialize Flask app
-app = Flask(__name__)
-app.config.from_object(Config)
+# Initialize FastAPI app
+app = FastAPI(title="Audio Processing API")
 
+# Mount the static folder
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Set up templates and static files
+templates = Jinja2Templates(directory="templates")
 
 def load_forms_dataframe():
     try:
@@ -25,78 +38,159 @@ def load_forms_dataframe():
         logger.error(f"Error loading forms dataframe: {str(e)}")
         return pd.DataFrame(columns=['name', 'json_format'])
 
+@app.on_event("startup")
+async def startup_event():
+    """Initialize application on startup"""
+    logger.info("Initializing application")
+    
+    # Initialize database
+    db_initialized = DatabaseService.initialize_db()
+    if db_initialized:
+        logger.info("Database initialized successfully")
+    else:
+        logger.error("Failed to initialize database")
 
-@app.route("/")
-def index():
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
     """Render the application frontend."""
     logger.info("Serving index page")
-    return render_template("audio/index_trial2.html")
+    return templates.TemplateResponse("index_text.html", {"request": request})
 
-@app.route("/upload", methods=["POST"])
-def upload():
+# Modify the existing upload endpoint to not require feedback initially
+@app.post("/upload")
+async def upload(
+    audio: UploadFile = File(...),
+    language: str = Form("en"),
+    model: str = Form("deepseek"),
+    isConversation: Optional[str] = Form(None),
+    doctorName: Optional[str] = Form(None),  # Keep doctor name field
+    feedback: Optional[str] = Form(None)     # Make feedback optional (it will be populated later)
+):
     """Handle file uploads and processing."""
     logger.info("Received upload request")
     
-    # Check if a file is uploaded
-    if "audio" not in request.files:
-        logger.warning("No audio file uploaded")
-        return jsonify({"error": "No audio file uploaded"}), 400
-    
-    audio_file = request.files["audio"]
-    language = request.form.get('language', 'en')
-    model = request.form.get('model', 'deepseek')
-    conversational_mode = request.form.get('isConversation') == 'on'
-    # print(conversational_mode)
-    logger.info(f"Upload parameters: language={language} ,conversational mode={conversational_mode}")
+    # Check conversational mode
+    conversational_mode = isConversation == 'on'
+    logger.info(f"Upload parameters: language={language}, model={model}, conversational mode={conversational_mode}")
+    logger.info(f"Doctor: {doctorName}")
     
     # For recorded audio, set a default filename if none is provided
-    if audio_file.filename == "":
-        audio_file.filename = f"recorded_audio_{int(time.time())}.wav"
-        logger.info(f"Set default filename: {audio_file.filename}")
+    if audio.filename == "":
+        audio.filename = f"recorded_audio_{int(time.time())}.wav"
+        logger.info(f"Set default filename: {audio.filename}")
     
     # Save the uploaded file
     try:
-        file_path = FileService.save_file(audio_file, app.config["UPLOAD_FOLDER"])
+        # Create a temporary file object
+        contents = await audio.read()
+        file_path = os.path.join(Config.UPLOAD_FOLDER, audio.filename)
+        
+        # Ensure upload directory exists
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        
+        # Write file
+        with open(file_path, "wb") as f:
+            f.write(contents)
         logger.info(f"File saved to {file_path}")
     except Exception as e:
         logger.error(f"Error saving file: {str(e)}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
-        
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+    
     try:
         logger.info("Starting batch processing mode")
         
         # Process the uploaded file
-        response = AudioService.process_batch(file_path, language, model, conversational_mode)
-        response_data = response.get_json()
-
-        raw_text = response_data["raw_text"]
-        arabic_text = response_data["arabic_text"]
-        translation = response_data["translation_text"]
-        json_data = response_data["json_data"]
-        reasoning = response_data["reasoning"]
-        preprocessing_time = response_data["preprocessing_time"]
-        voice_time = response_data["voice_processing_time"]
-        llm_time = response_data["llm_processing_time"]
-        total_time = response_data["total_time"]
-                
-        # Return the results
-        return jsonify({
-            "raw_text": raw_text,
-            "arabic_text": arabic_text,
-            "translation_text": translation,
-            "json_data": json_data,
-            "reasoning": reasoning,
-            "preprocessing_time": preprocessing_time,
-            "voice_processing_time": voice_time,
-            "llm_processing_time": llm_time
-        })
+        response_data = AudioService.process_batch(file_path, language, model, conversational_mode)
+        
+        # Save results to database
+        json_data_str = json.dumps(response_data["json_data"]) if isinstance(response_data["json_data"], (dict, list)) else response_data["json_data"]
+        
+        # Store in database with new fields (feedback is initially empty or with minimal value)
+        result_id = DatabaseService.save_audio_result(
+            filename=audio.filename,
+            language=language,
+            model=model,
+            is_conversation=conversational_mode,
+            raw_text=response_data["raw_text"],
+            arabic_text=response_data["arabic_text"],
+            translation_text=response_data["translation_text"],
+            json_data=json_data_str,
+            reasoning=response_data["reasoning"],
+            preprocessing_time=response_data["preprocessing_time"],
+            voice_processing_time=response_data["voice_processing_time"],
+            llm_processing_time=response_data["llm_processing_time"],
+            doctor_name=doctorName,
+            feedback=""  # Initially empty, will be populated via the save-feedback endpoint
+        )
+        
+        logger.info(f"Saved processing result to database with ID: {result_id}")
+        
+        # Return the response
+        return {
+            "raw_text": response_data["raw_text"],
+            "arabic_text": response_data["arabic_text"],
+            "translation_text": response_data["translation_text"],
+            "json_data": response_data["json_data"],
+            "reasoning": response_data["reasoning"],
+            "preprocessing_time": response_data["preprocessing_time"],
+            "voice_processing_time": response_data["voice_processing_time"],
+            "llm_processing_time": response_data["llm_processing_time"],
+            "doctor_name": doctorName,
+            "saved_to_db": result_id  # Return the actual ID so we can use it for saving feedback
+        }
     except Exception as e:
         logger.error(f"Error in batch processing: {str(e)}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+    
+@app.post("/save-feedback")
+async def save_feedback(request: Request):
+    """Save feedback for an existing result."""
+    try:
+        # Get JSON data from request
+        data = await request.json()
+        result_id = data.get("result_id")
+        feedback = data.get("feedback")
+        
+        if not result_id:
+            return JSONResponse(content={"error": "Missing result ID"}, status_code=400)
+        
+        # Update the feedback in the database
+        success = DatabaseService.update_feedback(result_id, feedback)
+        
+        if success:
+            logger.info(f"Updated feedback for result ID: {result_id}")
+            return JSONResponse(content={"status": "success", "message": "Feedback saved successfully"})
+        else:
+            logger.error(f"Failed to update feedback for result ID: {result_id}")
+            return JSONResponse(content={"error": "Failed to update feedback"}, status_code=500)
+            
+    except Exception as e:
+        logger.error(f"Error saving feedback: {str(e)}", exc_info=True)
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request):
+    """Display dashboard with stored results."""
+    try:
+        results = DatabaseService.get_audio_results(limit=50)
+        return templates.TemplateResponse("dashboard.html", {
+            "request": request,
+            "results": results
+        })
+    except Exception as e:
+        logger.error(f"Error displaying dashboard: {str(e)}", exc_info=True)
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+
+@app.get("/results")
+async def get_results(limit: int = 100):
+    """Retrieve recent processing results"""
+    try:
+        results = DatabaseService.get_audio_results(limit)
+        return {"results": results, "count": len(results)}
+    except Exception as e:
+        logger.error(f"Error retrieving results: {str(e)}", exc_info=True)
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
 if __name__ == "__main__":
-    # Ensure the database tables exist
-    logger.info("Initializing application")
-    logger.info("Starting Flask server on port 8586")
-    app.run(debug=Config.DEBUG, port=Config.PORT)
+    logger.info(f"Starting FastAPI server on port {8587}")
+    uvicorn.run("app:app", host="0.0.0.0", port=8587, reload=Config.DEBUG)

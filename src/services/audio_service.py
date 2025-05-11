@@ -1,6 +1,4 @@
 # src/services/audio_service.py - Core audio processing logic
-from flask import current_app, jsonify
-from src.services.file_service import FileService
 from src.services.speech_service import SpeechService
 from src.services.llm_service import LLMService
 from src.services.audio_preprocessing import AudioPreprocessingService
@@ -10,6 +8,9 @@ import time
 import os
 import concurrent.futures
 from pydub import AudioSegment
+from typing import Optional, List
+from config import Config
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -17,15 +18,26 @@ class AudioService:
     """Service handling audio processing workflows."""
     
     @staticmethod
-    def process_batch(audio_file, language, model, conversational_mode):
-        """Process audio in batch mode (non-streaming)."""
+    def process_batch(audio_file: str, language: str, model: str, conversational_mode: bool):
+        """Process audio in batch mode (non-streaming).
+        
+        Args:
+            audio_file: Path to the audio file
+            language: Language code for transcription ("en", "ar", etc.)
+            model: Model name to use for processing
+            conversational_mode: Whether to use conversational mode
+            config: Application configuration containing API keys and folders
+            
+        Returns:
+            JSONResponse containing processing results
+        """
         process_start = time.time()
         file_path = None
         processed_file_path = None
         
         try:
-            # Save file
-            file_path = FileService.save_file(audio_file, current_app.config["UPLOAD_FOLDER"])
+            # File is already saved by this point in FastAPI approach
+            file_path = audio_file
             
             # Step 1: Preprocess audio
             preprocess_start = time.time()
@@ -36,18 +48,19 @@ class AudioService:
             voice_start = time.time()
             raw_text = AudioService._process_audio_parallel(
                 processed_file_path, 
-                current_app.config["GROQ_API_KEY"],
+                Config.FIREWORKS_API_KEY,
                 language
             )
             voice_time = time.time() - voice_start
             logger.info(f"transcription total time: {voice_time}")
             print(raw_text)
+            
             if language == "ar":
                 # Step 3: Refine transcription
                 refine_start = time.time()
                 refined_text = LLMService.refine_ar_transcription(
                     raw_text,
-                    current_app.config["FIREWORKS_API_KEY"],
+                    Config.FIREWORKS_API_KEY,
                     model,
                     conversational_mode
                 )
@@ -56,7 +69,7 @@ class AudioService:
                 # Step 4: Translate to English
                 translated_text = LLMService.translate_to_eng(
                     refined_text,
-                    current_app.config["FIREWORKS_API_KEY"],
+                    Config.FIREWORKS_API_KEY,
                     model,
                     conversational_mode
                 )
@@ -67,7 +80,7 @@ class AudioService:
                 refine_start = time.time()
                 refined_text = LLMService.refine_en_transcription(
                     raw_text,
-                    current_app.config["FIREWORKS_API_KEY"],
+                    Config.FIREWORKS_API_KEY,
                     model,
                     conversational_mode
                 )
@@ -80,8 +93,8 @@ class AudioService:
             # Step 5: Extract features
             features_with_reasoning = LLMService.extract_features(
                 end_text,
-                current_app.config["FIREWORKS_API_KEY"],
-                model,
+                Config.FIREWORKS_API_KEY,
+                "llama",
                 conversational_mode
             )
             llm_time = time.time() - refine_start
@@ -93,8 +106,8 @@ class AudioService:
             print(reasoning)
             print(json_data)
             
-            # Return results
-            return jsonify({
+            # Return results as a dictionary (FastAPI will convert to JSON)
+            response_data = {
                 "raw_text": raw_text,
                 "arabic_text": refined_text, 
                 "translation_text": translated_text,
@@ -104,7 +117,10 @@ class AudioService:
                 "voice_processing_time": voice_time,
                 "llm_processing_time": llm_time,
                 "total_time": time.time() - process_start
-            })
+            }
+            
+            # Using JSONResponse to explicitly create a JSON response
+            return response_data
             
         except Exception as e:
             logger.error(f"Error in batch processing: {str(e)}", exc_info=True)
@@ -115,7 +131,8 @@ class AudioService:
             raise
     
     @staticmethod
-    def _process_audio_parallel(file_path, api_key, language, max_workers=3, chunk_percentage=100):
+    def _process_audio_parallel(file_path: str, api_key: str, language: str, max_workers: int = 3, 
+                               chunk_percentage: int = 100) -> str:
         """Process audio in parallel chunks or as a single file based on chunk percentage."""
         # If chunk_percentage is 100 or close to it, process the whole file directly
         if chunk_percentage >= 100:
@@ -150,10 +167,8 @@ class AudioService:
         
         return " ".join(filter(None, results))
 
-
     @staticmethod
-    # Audio chunking utility functions
-    def _split_audio(file_path, chunk_percentage=100):
+    def _split_audio(file_path: str, chunk_percentage: int = 100) -> List[str]:
         """
         Split audio file into smaller chunks for parallel processing
         
@@ -189,7 +204,7 @@ class AudioService:
             raise
     
     @staticmethod
-    def _process_chunk(chunk_path, api_key, language, preprocess=True):
+    def _process_chunk(chunk_path: str, api_key: str, language: str, preprocess: bool = True) -> str:
         """Process a single audio chunk with Whisper"""
         try:
             logger.info(f"Processing audio chunk: {chunk_path}")
@@ -218,7 +233,7 @@ class AudioService:
             return ""
     
     @staticmethod
-    def _cleanup_files(file_path, processed_file_path):
+    def _cleanup_files(file_path: Optional[str], processed_file_path: Optional[str]) -> None:
         """Clean up temporary files."""
         if file_path and os.path.exists(file_path):
             os.remove(file_path)

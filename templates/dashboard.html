@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Processing Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .result-card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .metadata {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        .timing-info {
+            font-size: 0.8rem;
+            color: #495057;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .nav-tabs {
+            margin-bottom: 15px;
+        }
+        .doctor-info {
+            font-weight: bold;
+            color: #0d6efd;
+            margin-bottom: 8px;
+        }
+        .feedback-box {
+            background-color: #e9fbe5;
+            border-left: 4px solid #28a745;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4">Audio Processing Results</h1>
+        
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Results Summary</h5>
+                        <p class="card-text">Showing {{ results|length }} recent results</p>
+                        <a href="/" class="btn btn-primary">Back to Upload</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% for result in results %}
+        <div class="card result-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ result.filename }}</h5>
+                <span class="badge bg-info">{{ result.insertion_date }}</span>
+            </div>
+            <div class="card-body">
+                <div class="metadata mb-3">
+                    <strong>Language:</strong> {{ result.language }} | 
+                    <strong>Model:</strong> {{ result.model }} | 
+                    <strong>Conversation Mode:</strong> {{ 'Yes' if result.is_conversation else 'No' }}
+                </div>
+                
+                <!-- Doctor and Feedback Information -->
+                {% if result.doctor_name %}
+                <div class="doctor-info">
+                    Doctor: {{ result.doctor_name }}
+                </div>
+                {% endif %}
+                
+                {% if result.feedback %}
+                <div class="feedback-box">
+                    <strong>Feedback:</strong> {{ result.feedback }}
+                </div>
+                {% endif %}
+                
+                <ul class="nav nav-tabs" id="resultTabs{{ loop.index }}" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="rawText{{ loop.index }}-tab" data-bs-toggle="tab" data-bs-target="#rawText{{ loop.index }}" type="button" role="tab">Raw Text</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="arabicText{{ loop.index }}-tab" data-bs-toggle="tab" data-bs-target="#arabicText{{ loop.index }}" type="button" role="tab">Arabic Text</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="translationText{{ loop.index }}-tab" data-bs-toggle="tab" data-bs-target="#translationText{{ loop.index }}" type="button" role="tab">Translation</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="jsonData{{ loop.index }}-tab" data-bs-toggle="tab" data-bs-target="#jsonData{{ loop.index }}" type="button" role="tab">JSON Data</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reasoning{{ loop.index }}-tab" data-bs-toggle="tab" data-bs-target="#reasoning{{ loop.index }}" type="button" role="tab">Reasoning</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content mt-3" id="resultTabsContent{{ loop.index }}">
+                    <div class="tab-pane fade show active" id="rawText{{ loop.index }}" role="tabpanel">
+                        <pre>{{ result.raw_text or 'No raw text available' }}</pre>
+                    </div>
+                    <div class="tab-pane fade" id="arabicText{{ loop.index }}" role="tabpanel">
+                        <pre dir="rtl">{{ result.arabic_text or 'No Arabic text available' }}</pre>
+                    </div>
+                    <div class="tab-pane fade" id="translationText{{ loop.index }}" role="tabpanel">
+                        <pre>{{ result.translation_text or 'No translation available' }}</pre>
+                    </div>
+                    <div class="tab-pane fade" id="jsonData{{ loop.index }}" role="tabpanel">
+                        <pre>{{ result.json_data or 'No JSON data available' }}</pre>
+                    </div>
+                    <div class="tab-pane fade" id="reasoning{{ loop.index }}" role="tabpanel">
+                        <pre>{{ result.reasoning or 'No reasoning available' }}</pre>
+                    </div>
+                </div>
+                
+                <div class="timing-info mt-3">
+                    <p>
+                        <strong>Processing Times:</strong> 
+                        Preprocessing: {{ "%.2f"|format(result.preprocessing_time or 0) }}s | 
+                        Voice Processing: {{ "%.2f"|format(result.voice_processing_time or 0) }}s | 
+                        LLM Processing: {{ "%.2f"|format(result.llm_processing_time or 0) }}s
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info">No results found</div>
+        {% endfor %}
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

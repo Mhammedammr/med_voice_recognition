@@ -39,19 +39,12 @@
                     </div>
                 </div>
 
-                <!-- model Selection -->
+
+                <!-- Doctor Name Field -->
                 <div class="mb-4">
-                    <label for="modelSelector" class="block text-sm font-medium text-gray-700 mb-2">Audio Language:</label>
-                    <div class="flex gap-4">
-                        <div class="flex items-center">
-                            <input type="radio" id="deepseek" name="model" value="deepseek" checked class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                            <label for="deepseek" class="ml-2 block text-sm text-gray-700">deepseek-V3</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="radio" id="Llama" name="model" value="Llama" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                            <label for="Llama " class="ml-2 block text-sm text-gray-700">Llama 4 Maverick</label>
-                        </div>
-                    </div>
+                    <label for="doctorName" class="block text-sm font-medium text-gray-700 mb-2">Doctor Name:</label>
+                    <input type="text" id="doctorName" name="doctorName" placeholder="Enter doctor's name" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
 
@@ -191,6 +184,19 @@
                     </table>
                 </div>
             </div>
+            
+            <div id="feedbackSection" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">Additional Feedback</h2>
+                <div class="mb-4">
+                    <textarea id="resultFeedback" rows="3" placeholder="Enter any additional feedback or notes"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div class="flex justify-end">
+                    <button id="saveFeedbackButton" type="button" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        Save Feedback
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -326,16 +332,22 @@
                 recordingControls.appendChild(shortcutHint);
             }
             
-            // Function to toggle recording state
+// Function to toggle recording state
 // Improved microphone access function
 async function accessMicrophone() {
     try {
-        // Request both audio and optional video (false)
+        // First check if MediaRecorder is supported
+        if (typeof MediaRecorder === 'undefined') {
+            throw new Error('MediaRecorder not supported in this browser');
+        }
+
+        // Request audio with cross-browser optimized settings
         const stream = await navigator.mediaDevices.getUserMedia({
             audio: {
-                echoCancellation: true,
-                noiseSuppression: true,
-                autoGainControl: true
+                echoCancellation: { ideal: true },
+                noiseSuppression: { ideal: true },
+                autoGainControl: { ideal: true },
+                channelCount: { ideal: 1 }  // Mono recording is more reliable
             },
             video: false
         });
@@ -343,28 +355,46 @@ async function accessMicrophone() {
         // Log success for debugging
         console.log('Microphone access successful');
         
+        // Test if the stream actually contains audio tracks
+        const audioTracks = stream.getAudioTracks();
+        if (audioTracks.length === 0) {
+            throw new Error('No audio tracks found in media stream');
+        }
+        
+        console.log('Audio tracks:', audioTracks.length);
+        console.log('Audio track settings:', audioTracks[0].getSettings());
+        
         // Return the stream for further use
         return stream;
     } catch (error) {
         // Provide more detailed error handling based on error type
         if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
             console.error('Microphone permission denied by user:', error);
-            showToastNotification('Microphone access denied. Please allow microphone access in your browser settings.', 'error');
+            showToastNotification('Microphone access denied. Please allow microphone access in your browser settings.', 'error', 5000);
         } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
             console.error('No microphone found:', error);
-            showToastNotification('No microphone detected. Please connect a microphone and try again.', 'error');
+            showToastNotification('No microphone detected. Please connect a microphone and try again.', 'error', 5000);
         } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
             console.error('Microphone is already in use or not readable:', error);
-            showToastNotification('Could not access microphone. It may be in use by another application.', 'error');
+            showToastNotification('Could not access microphone. It may be in use by another application.', 'error', 5000);
         } else if (error.name === 'OverconstrainedError') {
             console.error('Microphone constraints cannot be satisfied:', error);
-            showToastNotification('Your microphone does not meet the required constraints.', 'error');
+            // Try again with minimal constraints
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                console.log('Microphone access successful with minimal constraints');
+                return stream;
+            } catch (fallbackError) {
+                console.error('Fallback microphone access failed:', fallbackError);
+                showToastNotification('Your microphone could not be accessed even with minimal settings.', 'error', 5000);
+                throw fallbackError;
+            }
         } else if (error.name === 'TypeError') {
             console.error('Invalid constraints or parameters:', error);
-            showToastNotification('Technical error: Invalid microphone configuration.', 'error');
+            showToastNotification('Technical error: Invalid microphone configuration.', 'error', 5000);
         } else {
             console.error('Unexpected microphone error:', error);
-            showToastNotification('An unexpected error occurred accessing your microphone.', 'error');
+            showToastNotification('An unexpected error occurred accessing your microphone: ' + error.message, 'error', 5000);
         }
         
         // Rethrow for upstream handling
@@ -374,23 +404,39 @@ async function accessMicrophone() {
 
     // Modified toggleRecording function to use the new accessMicrophone function
     async function toggleRecording() {
-        if (!isRecording) {
-            try {
-                // Show indicator that we're attempting to access the microphone
-                recordingStatus.textContent = 'Accessing microphone...';
-                
-                // Get the audio stream
-                const stream = await accessMicrophone();
-                startRecording(stream);
-            } catch (err) {
-                // Error already handled in accessMicrophone
-                recordingStatus.textContent = 'Error accessing microphone. Please check permissions.';
-                recordingStatus.classList.add('text-red-500');
+    if (!isRecording) {
+        try {
+            // Show indicator that we're attempting to access the microphone
+            recordingStatus.textContent = 'Accessing microphone...';
+            recordingStatus.classList.remove('text-red-500');
+            
+            // Get the audio stream
+            const stream = await accessMicrophone();
+            
+            // Check that we have audio tracks before starting
+            if (stream.getAudioTracks().length === 0) {
+                throw new Error('No audio tracks available in the stream');
             }
-        } else {
-            stopRecording();
+            
+            startRecording(stream);
+        } catch (err) {
+            console.error('Recording error:', err);
+            recordingStatus.textContent = 'Error: ' + (err.message || 'Failed to access microphone');
+            recordingStatus.classList.add('text-red-500');
+            
+            // Try to provide helpful advice based on the platform
+            const platform = navigator.platform || navigator.userAgent;
+            if (platform.indexOf('Win') !== -1) {
+                showToastNotification('Windows users: Please check your microphone privacy settings in Windows Settings > Privacy > Microphone', 'info', 8000);
+            } else if (platform.indexOf('Mac') !== -1) {
+                showToastNotification('Mac users: Please check your microphone permissions in System Preferences > Security & Privacy > Microphone', 'info', 8000);
+            }
         }
+    } else {
+        stopRecording();
     }
+}
+
 
     // Browser compatibility check function
     function checkBrowserCompatibility() {
@@ -451,81 +497,291 @@ async function accessMicrophone() {
         }, duration);
     }
             
-            // Function to start recording
-            function startRecording(stream) {
-                isRecording = true;
-                audioChunks = [];
+    // Function to start recording
+    function startRecording(stream) {
+    isRecording = true;
+    audioChunks = [];
+    
+    let options = {};
+    
+    // Try to use more widely supported format
+    // Different browsers support different MIME types
+    if (MediaRecorder.isTypeSupported('audio/webm')) {
+        options = { mimeType: 'audio/webm' };
+    } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        options = { mimeType: 'audio/mp4' };
+    } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+        options = { mimeType: 'audio/ogg' };
+    }
+    
+    try {
+        // Create media recorder with best available options
+        mediaRecorder = new MediaRecorder(stream, options);
+        console.log('MediaRecorder created with options:', options);
+        console.log('MediaRecorder state:', mediaRecorder.state);
+        
+        // Ask for data more frequently for better reliability (every second)
+        const recordingInterval = setInterval(() => {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.requestData();
+            }
+        }, 1000);
+        
+        // Event handler for when data is available
+        mediaRecorder.ondataavailable = (event) => {
+            console.log('Data available event:', event.data?.size || 0, 'bytes');
+            if (event.data && event.data.size > 0) {
+                audioChunks.push(event.data);
+            }
+        };
+        
+        // Event handler for when recording stops
+        mediaRecorder.onstop = () => {
+            clearInterval(recordingInterval);
+            
+            console.log('Recording stopped. Chunks collected:', audioChunks.length);
+            
+            if (audioChunks.length === 0) {
+                showToastNotification('No audio data was recorded. Please check your microphone.', 'error', 5000);
+                recordingStatus.textContent = 'No audio recorded. Check microphone.';
+                recordingStatus.classList.add('text-red-500');
                 
-                // Create media recorder
-                mediaRecorder = new MediaRecorder(stream);
+                // Release microphone
+                stream.getTracks().forEach(track => track.stop());
                 
-                // Event handler for when data is available
-                mediaRecorder.ondataavailable = (event) => {
-                    if (event.data.size > 0) {
-                        audioChunks.push(event.data);
-                    }
-                };
+                isRecording = false;
+                recordButton.textContent = 'Record';
+                recordButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+                recordButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                recordingTimer.classList.add('hidden');
                 
-                // Event handler for when recording stops
-                mediaRecorder.onstop = () => {
-                    // Create blob from recorded chunks
-                    recordedBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    
-                    // Create object URL for playback
-                    const audioURL = URL.createObjectURL(recordedBlob);
-                    audioPlayer.src = audioURL;
-                    
-                    // Show playback controls
-                    audioPlayback.classList.remove('hidden');
-                    
-                    // Update UI
-                    recordingStatus.textContent = 'Recording completed';
-                    recordButton.textContent = 'Record';
-                    recordButton.classList.remove('bg-red-600', 'hover:bg-red-700');
-                    recordButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                    
-                    // Hide timer
-                    recordingTimer.classList.add('hidden');
-                    
-                    // Release microphone
-                    stream.getTracks().forEach(track => track.stop());
-                    
-                    // Validate form
-                    validateForm();
-                    
-                    // Show toast notification for recording complete
-                    showToastNotification('Recording completed successfully!', 'success');
-                };
-                
-                // Start recording
-                mediaRecorder.start();
-                
-                // Update UI
-                recordButton.textContent = 'Stop';
-                recordButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                recordButton.classList.add('bg-red-600', 'hover:bg-red-700');
-                recordingStatus.textContent = 'Recording...';
-                
-                // Start timer
-                startTime = Date.now();
-                recordingTimer.classList.remove('hidden');
-                updateTimer();
-                timerInterval = setInterval(updateTimer, 1000);
-                
-                // Show toast notification for recording started
-                showToastNotification('Recording started. Speak now...', 'info');
+                return;
             }
             
-            // Function to stop recording
-            function stopRecording() {
-                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                    mediaRecorder.stop();
-                    isRecording = false;
-                    
-                    // Stop timer
-                    clearInterval(timerInterval);
-                }
+            // Determine the correct MIME type for the blob
+            let blobType = 'audio/wav';
+            if (mediaRecorder.mimeType && mediaRecorder.mimeType !== '') {
+                blobType = mediaRecorder.mimeType;
             }
+            
+            // Create blob from recorded chunks
+            recordedBlob = new Blob(audioChunks, { type: blobType });
+            console.log('Recorded blob:', recordedBlob.size, 'bytes, type:', blobType);
+            
+            // Create object URL for playback
+            const audioURL = URL.createObjectURL(recordedBlob);
+            audioPlayer.src = audioURL;
+            
+            // Show playback controls
+            audioPlayback.classList.remove('hidden');
+            
+            // Update UI
+            recordingStatus.textContent = 'Recording completed';
+            recordButton.textContent = 'Record';
+            recordButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+            recordButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            
+            // Hide timer
+            recordingTimer.classList.add('hidden');
+            
+            // Release microphone
+            stream.getTracks().forEach(track => track.stop());
+            
+            // Validate form
+            validateForm();
+            
+            // Show toast notification for recording complete
+            showToastNotification('Recording completed successfully!', 'success');
+        };
+        
+        // Add error handler
+        mediaRecorder.onerror = (event) => {
+            console.error('MediaRecorder error:', event.error);
+            showToastNotification('Recording error: ' + event.error.message, 'error');
+            
+            // Stop the recording on error
+            if (mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+        };
+
+        // Start recording - capture data in smaller chunks (100ms) for better reliability
+        mediaRecorder.start(100);
+        console.log('Recording started');
+        
+        // Update UI
+        recordButton.textContent = 'Stop';
+        recordButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        recordButton.classList.add('bg-red-600', 'hover:bg-red-700');
+        recordingStatus.textContent = 'Recording...';
+        
+        // Create visual audio level indicator
+        createAudioLevelIndicator(stream);
+        
+        // Start timer
+        startTime = Date.now();
+        recordingTimer.classList.remove('hidden');
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 1000);
+        
+        // Show toast notification for recording started
+        showToastNotification('Recording started. Speak now...', 'info');
+    } catch (error) {
+        console.error('Error starting MediaRecorder:', error);
+        recordingStatus.textContent = 'Error starting recording: ' + error.message;
+        recordingStatus.classList.add('text-red-500');
+        isRecording = false;
+        
+        // Release microphone
+        stream.getTracks().forEach(track => track.stop());
+    }
+}
+function createAudioLevelIndicator(stream) {
+    try {
+        // Check if AudioContext exists
+        if (typeof AudioContext === 'undefined' && typeof webkitAudioContext === 'undefined') {
+            console.log('AudioContext not supported - skipping audio level indicator');
+            return;
+        }
+        
+        // Create audio context
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        const audioContext = new AudioContextClass();
+        
+        // Create analyzer
+        const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        
+        // Connect the microphone stream to the analyser
+        const source = audioContext.createMediaStreamSource(stream);
+        source.connect(analyser);
+        
+        // Create or get container for the audio level indicator
+        let levelContainer = document.getElementById('audioLevelIndicator');
+        if (!levelContainer) {
+            levelContainer = document.createElement('div');
+            levelContainer.id = 'audioLevelIndicator';
+            levelContainer.className = 'mt-2 h-4 bg-gray-200 rounded-full overflow-hidden';
+            recordingStatus.parentNode.insertBefore(levelContainer, recordingStatus.nextSibling);
+        }
+        
+        // Create the level bar
+        let levelBar = document.getElementById('audioLevelBar');
+        if (!levelBar) {
+            levelBar = document.createElement('div');
+            levelBar.id = 'audioLevelBar';
+            levelBar.className = 'h-full bg-green-500 transition-all duration-100';
+            levelBar.style.width = '0%';
+            levelContainer.appendChild(levelBar);
+        }
+        
+        // Update the level bar
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        
+        function updateLevel() {
+            if (!isRecording) return;
+            
+            analyser.getByteFrequencyData(dataArray);
+            
+            // Calculate average volume
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                sum += dataArray[i];
+            }
+            const average = sum / dataArray.length;
+            
+            // Map to percentage (0-100%)
+            const percentage = Math.min(100, Math.max(0, average * 2));
+            
+            // Update the level bar
+            levelBar.style.width = percentage + '%';
+            
+            // Add color indicators
+            if (percentage < 5) {
+                levelBar.className = 'h-full bg-red-500 transition-all duration-100';
+            } else if (percentage < 20) {
+                levelBar.className = 'h-full bg-yellow-500 transition-all duration-100';
+            } else {
+                levelBar.className = 'h-full bg-green-500 transition-all duration-100';
+            }
+            
+            // Schedule next update
+            if (isRecording) {
+                requestAnimationFrame(updateLevel);
+            } else {
+                // Hide and reset the level indicator when not recording
+                levelContainer.classList.add('hidden');
+                levelBar.style.width = '0%';
+            }
+        }
+        
+        // Show the level indicator and start updating
+        levelContainer.classList.remove('hidden');
+        updateLevel();
+        
+    } catch (error) {
+        console.error('Error creating audio level indicator:', error);
+        // Continue without the indicator
+    }
+}
+
+
+            
+    // Function to stop recording
+    function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        try {
+            console.log('Stopping recording...');
+            mediaRecorder.stop();
+        } catch (error) {
+            console.error('Error stopping MediaRecorder:', error);
+            
+            // Force cleanup
+            isRecording = false;
+            clearInterval(timerInterval);
+            
+            // Hide the level indicator if it exists
+            const levelContainer = document.getElementById('audioLevelIndicator');
+            if (levelContainer) {
+                levelContainer.classList.add('hidden');
+            }
+            
+            // Update UI
+            recordingStatus.textContent = 'Recording stopped with errors';
+            recordButton.textContent = 'Record';
+            recordButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+            recordButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            recordingTimer.classList.add('hidden');
+        }
+    }
+}
+
+function checkBrowserCompatibility() {
+    const compatibility = {
+        getUserMedia: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+        mediaRecorder: typeof MediaRecorder !== 'undefined',
+        audioContext: typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined'
+    };
+    
+    const isCompatible = Object.values(compatibility).every(Boolean);
+    
+    if (!isCompatible) {
+        // Show browser compatibility warning
+        const incompatibleFeatures = Object.entries(compatibility)
+            .filter(([_, supported]) => !supported)
+            .map(([feature]) => feature);
+            
+        showToastNotification(
+            `Your browser might not fully support audio recording. Missing: ${incompatibleFeatures.join(', ')}. 
+            Please try using Chrome, Firefox, or Edge.`, 
+            'warning',
+            8000
+        );
+    }
+    
+    return isCompatible;
+}
+
             
             // Function to update recording timer
             function updateTimer() {
@@ -535,28 +791,30 @@ async function accessMicrophone() {
                 recordingTimer.textContent = `${minutes}:${seconds}`;
             }
             
-            // Show toast notification
-            function showToastNotification(message, type = 'info') {
-                const toast = document.createElement('div');
-                toast.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg text-white transition-opacity duration-300 ${
-                    type === 'error' ? 'bg-red-600' :
-                    type === 'success' ? 'bg-green-600' :
-                    'bg-blue-600'
-                }`;
-                toast.textContent = message;
-                toast.style.zIndex = '9999';
-                
-                document.body.appendChild(toast);
-                
-                // Fade out and remove after 3 seconds
-                setTimeout(() => {
-                    toast.classList.add('opacity-0');
-                    setTimeout(() => {
-                        document.body.removeChild(toast);
-                    }, 300);
-                }, 3000);
+    // Show toast notification
+    function showToastNotification(message, type = 'info', duration = 3000) {
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg text-white transition-opacity duration-300 ${
+        type === 'error' ? 'bg-red-600' :
+        type === 'success' ? 'bg-green-600' :
+        type === 'warning' ? 'bg-yellow-600' :
+        'bg-blue-600'
+    }`;
+    toast.textContent = message;
+    toast.style.zIndex = '9999';
+    
+    document.body.appendChild(toast);
+    
+    // Fade out and remove after specified duration
+    setTimeout(() => {
+        toast.classList.add('opacity-0');
+        setTimeout(() => {
+            if (document.body.contains(toast)) {
+                document.body.removeChild(toast);
             }
-            
+        }, 300);
+    }, duration);
+}
             // When a form is selected, store its JSON format in the hidden input
             formSelector.addEventListener('change', function() {
                 const selectedOption = formSelector.options[formSelector.selectedIndex];
@@ -725,36 +983,160 @@ async function accessMicrophone() {
 
         // Display the results
         function displayResults(data) {
-            // Show results section
-            document.getElementById('results').classList.remove('hidden');
-            
-            // Display raw text
-            document.getElementById('rawText').textContent = data.raw_text || '';
-            
-            // Display Arabic text
-            document.getElementById('arabicText').textContent = data.arabic_text || '';
-            
-            // Display translation text
-            document.getElementById('translationText').textContent = data.translation_text || '';
-
-            // Display reasoning text
-            document.getElementById('reasoningText').textContent = data.reasoning || '';
-            
-            // Display JSON data in table
-            const tableBody = document.querySelector('#jsonTable tbody');
-            tableBody.innerHTML = ''; // Clear existing content
-            
-            if (data.json_data && typeof data.json_data === 'object') {
-                Object.entries(data.json_data).forEach(([key, value]) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${key}</td>
-                        <td class="px-6 py-4 whitespace-normal text-sm text-gray-500">${formatValue(value)}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            }
+        // Show results section
+        document.getElementById('results').classList.remove('hidden');
+        
+        // Show feedback section
+        document.getElementById('feedbackSection').classList.remove('hidden');
+        
+        // Store the result ID for later use when saving feedback
+        // Create hidden input if it doesn't exist
+        let resultIdInput = document.getElementById('resultId');
+        if (!resultIdInput) {
+            resultIdInput = document.createElement('input');
+            resultIdInput.type = 'hidden';
+            resultIdInput.id = 'resultId';
+            document.getElementById('feedbackSection').appendChild(resultIdInput);
         }
+        resultIdInput.value = data.saved_to_db ? data.saved_to_db : '';
+        
+        // Display raw text
+        document.getElementById('rawText').textContent = data.raw_text || '';
+        
+        // Display Arabic text
+        document.getElementById('arabicText').textContent = data.arabic_text || '';
+        
+        // Display translation text
+        document.getElementById('translationText').textContent = data.translation_text || '';
+
+        // Display reasoning text
+        document.getElementById('reasoningText').textContent = data.reasoning || '';
+        
+        // Display JSON data in table
+        const tableBody = document.querySelector('#jsonTable tbody');
+        tableBody.innerHTML = ''; // Clear existing content
+        
+        if (data.json_data && typeof data.json_data === 'object') {
+            Object.entries(data.json_data).forEach(([key, value]) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${key}</td>
+                    <td class="px-6 py-4 whitespace-normal text-sm text-gray-500">${formatValue(value)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // Get the save feedback button
+    const saveFeedbackButton = document.getElementById('saveFeedbackButton');
+    
+    if (!saveFeedbackButton) {
+        console.error('Save feedback button not found in the DOM');
+        return;
+    }
+    
+    // Define the toast notification function if it doesn't exist
+    function showToastNotification(message, type) {
+        // Check if a custom toast function already exists
+        if (window.showToastNotification) {
+            window.showToastNotification(message, type);
+            return;
+        }
+        
+        // Create a simple toast implementation if none exists
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.right = '20px';
+        toast.style.padding = '10px 20px';
+        toast.style.borderRadius = '4px';
+        toast.style.zIndex = '9999';
+        
+        if (type === 'success') {
+            toast.style.backgroundColor = '#4CAF50';
+            toast.style.color = 'white';
+        } else if (type === 'error') {
+            toast.style.backgroundColor = '#F44336';
+            toast.style.color = 'white';
+        }
+        
+        document.body.appendChild(toast);
+        
+        // Remove the toast after 3 seconds
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+    
+    // Add click event listener to the save feedback button
+    saveFeedbackButton.addEventListener('click', async function() {
+        const feedbackInput = document.getElementById('resultFeedback');
+        const resultIdInput = document.getElementById('resultId');
+        
+        if (!feedbackInput) {
+            console.error('Feedback input not found');
+            return;
+        }
+        
+        if (!resultIdInput) {
+            console.error('Result ID input not found');
+            return;
+        }
+        
+        const feedback = feedbackInput.value;
+        const resultId = resultIdInput.value;
+        
+        console.log('Submitting feedback:', { resultId, feedback });
+        
+        try {
+            // Show saving indicator
+            saveFeedbackButton.disabled = true;
+            saveFeedbackButton.textContent = 'Saving...';
+            
+            const response = await fetch('/save-feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    result_id: resultId,
+                    feedback: feedback
+                })
+            });
+            
+            console.log('Response status:', response.status);
+            
+            // Always reset the button, regardless of success or failure
+            const resetButton = () => {
+                saveFeedbackButton.disabled = false;
+                saveFeedbackButton.textContent = 'Save Feedback';
+            };
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Response data:', data);
+            
+            // Show success message
+            showToastNotification('Feedback saved successfully!', 'success');
+            // Reset button
+            resetButton();
+            
+        } catch (error) {
+            console.error('Error saving feedback:', error);
+            showToastNotification('Error saving feedback', 'error');
+            // Reset button
+            saveFeedbackButton.disabled = false;
+            saveFeedbackButton.textContent = 'Save Feedback';
+        }
+    });
+});
     </script>
 </body>
 </html>
