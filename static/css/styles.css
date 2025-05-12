@@ -1,61 +1,41 @@
+/* Custom styles to enhance Bootstrap */
+
 /* Audio level indicator styles */
 #audioLevelIndicator {
     height: 16px;
-    background-color: #f3f4f6;
     border-radius: 9999px;
     overflow: hidden;
     margin-top: 8px;
     margin-bottom: 8px;
+    background-color: #e9ecef;
 }
 
 #audioLevelBar {
     height: 100%;
-    background-color: #10b981;
+    background-color: #198754;
     transition: width 100ms ease-in-out;
     width: 0%;
 }
 
-/* Toast notification styles */
-.toast-notification {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-    color: white;
-    z-index: 9999;
-    opacity: 1;
-    transition: opacity 300ms ease-in-out;
-}
-
-.toast-info {
-    background-color: #3b82f6;
-}
-
-.toast-success {
-    background-color: #10b981;
-}
-
-.toast-error {
-    background-color: #ef4444;
-}
-
-.toast-warning {
-    background-color: #f59e0b;
-}
-
 /* Processing steps style enhancements */
+.step-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
 .step-pending {
-    background-color: #d1d5db;
+    background-color: #dee2e6;
 }
 
 .step-active {
-    background-color: #3b82f6;
+    background-color: #0d6efd;
 }
 
 .step-complete {
-    background-color: #10b981;
+    background-color: #198754;
 }
 
 /* Audio player styling */
@@ -64,60 +44,58 @@ audio {
     margin-top: 0.5rem;
 }
 
-/* Responsive adjustments */
-@media (max-width: 640px) {
-    #recordingControls {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    #recordingControls button {
-        margin-bottom: 0.5rem;
-    }
-    
-    .toast-notification {
-        width: 90%;
-        left: 5%;
-        right: 5%;
-    }
+
+/* Custom button styles */
+.btn-record {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
 }
 
-/* Additional UI enhancements */
-.transition-all {
-    transition-property: all;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
+.btn-record:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
 }
 
-.hover-shadow:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+/* Processing steps container */
+#processingSteps {
+    position: relative;
 }
 
-/* Focus states for better accessibility */
-button:focus, 
-select:focus, 
-textarea:focus, 
-input:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+/* Audio recording counter style */
+#recordingTimer {
+    font-family: monospace;
+    font-weight: 600;
 }
 
-/* RTL support for Arabic language */
-.rtl {
-    direction: rtl;
-    text-align: right;
+/* Features table */
+.features-table th {
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.875rem;
 }
 
-/* Loading animation for button */
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
+/* Feedback section styling */
+#feedbackSection textarea {
+    resize: vertical;
+    min-height: 100px;
 }
 
-.animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Fixed classes for hiding elements */
+.d-none {
+    display: none !important;
+}
+
+/* File upload styles */
+.file-upload-label {
+    cursor: pointer;
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+}
+
+.file-upload-label:hover {
+    background-color: #e9ecef;
 }

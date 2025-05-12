@@ -694,69 +694,100 @@ document.addEventListener('DOMContentLoaded', function() {
         }, duration);
     }
 
-    /**
-     * Simulate processing progress with visual feedback
-     */
-    function simulateProgress() {
-        // Reset all steps
-        steps.forEach(step => {
-            step.querySelector('div').classList.remove('bg-green-500', 'bg-blue-500');
-            step.querySelector('div').classList.add('bg-gray-300');
-        });
-        
-        let currentStep = 0;
-        let estimatedSeconds = 30;
-        
-        // Update estimated time function
-        function updateEstimatedTime(secondsRemaining) {
-            if (secondsRemaining <= 0) {
-                estimatedTime.textContent = 'almost done...';
-            } else if (secondsRemaining < 10) {
-                estimatedTime.textContent = 'less than 10 seconds';
-            } else {
-                estimatedTime.textContent = `~${secondsRemaining} seconds`;
-            }
+/**
+ * Simulate processing progress with visual feedback
+ */
+function simulateProgress() {
+    const steps = [
+        document.getElementById('step1'),
+        document.getElementById('step2'),
+        document.getElementById('step3'),
+        document.getElementById('step4'),
+        document.getElementById('step5')
+    ];
+    
+    const estimatedTime = document.getElementById('estimatedTime');
+    if (!estimatedTime || !steps.every(Boolean)) {
+        console.error('Progress elements not found');
+        return { progressInterval: null, processingTimeout: null };
+    }
+    
+    // Reset all steps
+    steps.forEach(step => {
+        const indicator = step.querySelector('.step-indicator');
+        if (indicator) {
+            indicator.className = 'step-indicator step-pending';
         }
+    });
+    
+    let currentStep = 0;
+    let estimatedSeconds = 30;
+    
+    // Update estimated time function
+    function updateEstimatedTime(secondsRemaining) {
+        if (!estimatedTime) return;
         
-        // Start with first step
-        steps[currentStep].querySelector('div').classList.remove('bg-gray-300');
-        steps[currentStep].querySelector('div').classList.add('bg-blue-500');
-        
-        // Initial estimated time
+        if (secondsRemaining <= 0) {
+            estimatedTime.textContent = 'almost done...';
+        } else if (secondsRemaining < 10) {
+            estimatedTime.textContent = 'less than 10 seconds';
+        } else {
+            estimatedTime.textContent = `~${secondsRemaining} seconds`;
+        }
+    }
+    
+    // Start with first step
+    const firstStepIndicator = steps[currentStep].querySelector('.step-indicator');
+    if (firstStepIndicator) {
+        firstStepIndicator.className = 'step-indicator step-active';
+    }
+    
+    // Initial estimated time
+    updateEstimatedTime(estimatedSeconds);
+    
+    // Progress interval
+    const progressInterval = setInterval(() => {
+        // Decrease estimated time
+        estimatedSeconds -= 2;
         updateEstimatedTime(estimatedSeconds);
         
-        // Progress interval
-        progressInterval = setInterval(() => {
-            // Decrease estimated time
-            estimatedSeconds -= 2;
-            updateEstimatedTime(estimatedSeconds);
-            
-            // Move to next step roughly every 5 seconds
-            if ((currentStep < 4) && (Math.random() > 0.7 || estimatedSeconds <= (4 - currentStep) * 5)) {
-                // Mark current step as completed
-                steps[currentStep].querySelector('div').classList.remove('bg-blue-500');
-                steps[currentStep].querySelector('div').classList.add('bg-green-500');
-                
-                // Move to next step
-                currentStep++;
-                steps[currentStep].querySelector('div').classList.remove('bg-gray-300');
-                steps[currentStep].querySelector('div').classList.add('bg-blue-500');
+        // Move to next step roughly every 5 seconds
+        if ((currentStep < 4) && (Math.random() > 0.7 || estimatedSeconds <= (4 - currentStep) * 5)) {
+            // Mark current step as completed
+            const currentIndicator = steps[currentStep].querySelector('.step-indicator');
+            if (currentIndicator) {
+                currentIndicator.className = 'step-indicator step-complete';
             }
-        }, 2000);
+            
+            // Move to next step
+            currentStep++;
+            const nextIndicator = steps[currentStep].querySelector('.step-indicator');
+            if (nextIndicator) {
+                nextIndicator.className = 'step-indicator step-active';
+            }
+        }
+    }, 2000);
+    
+    // Fallback timeout to avoid stuck progress
+    const processingTimeout = setTimeout(() => {
+        clearInterval(progressInterval);
         
-        // Fallback timeout to avoid stuck progress
-        processingTimeout = setTimeout(() => {
-            clearInterval(progressInterval);
-            
-            // Mark all steps as complete
-            steps.forEach(step => {
-                step.querySelector('div').classList.remove('bg-gray-300', 'bg-blue-500');
-                step.querySelector('div').classList.add('bg-green-500');
-            });
-            
+        // Mark all steps as complete
+        steps.forEach(step => {
+            const indicator = step.querySelector('.step-indicator');
+            if (indicator) {
+                indicator.className = 'step-indicator step-complete';
+            }
+        });
+        
+        if (estimatedTime) {
             estimatedTime.textContent = 'processing is taking longer than expected...';
-        }, 60000); // Fallback after 60 seconds
-    }
+        }
+    }, 60000); // Fallback after 60 seconds
+    
+    return { progressInterval, processingTimeout };
+}
+
 
     /**
      * Validate the form inputs
@@ -773,105 +804,155 @@ document.addEventListener('DOMContentLoaded', function() {
         analyzeButton.disabled = !hasAudio;
     }
 
-    /**
-     * Show status message with enhanced options
-     */
-    function showStatus(message, type = 'info', showProcessingUI = false) {
-        const statusDiv = document.getElementById('statusMessage');
-        const statusText = document.getElementById('statusMessageText');
-        const spinnerContainer = document.getElementById('spinnerContainer');
-        const processingSteps = document.getElementById('processingSteps');
-        const estimatedTimeContainer = document.getElementById('estimatedTimeContainer');
-        
-        statusText.textContent = message;
-        
-        // Set appropriate background color
-        statusDiv.className = `mb-8 p-4 rounded-lg ${
-            type === 'error' ? 'bg-red-100 text-red-700' :
-            type === 'success' ? 'bg-green-100 text-green-700' :
-            'bg-blue-100 text-blue-700'
-        }`;
-        
-        // Show/hide the spinner
-        if (showProcessingUI) {
-            spinnerContainer.classList.remove('hidden');
-            processingSteps.classList.remove('hidden');
-            estimatedTimeContainer.classList.remove('hidden');
-        } else {
-            spinnerContainer.classList.add('hidden');
-            processingSteps.classList.add('hidden');
-            estimatedTimeContainer.classList.add('hidden');
-        }
-        
-        statusDiv.classList.remove('hidden');
+/**
+ * Show status message with enhanced options
+ */
+function showStatus(message, type = 'info', showProcessingUI = false) {
+    const statusDiv = document.getElementById('statusMessage');
+    const statusText = document.getElementById('statusMessageText');
+    const spinnerContainer = document.getElementById('spinnerContainer');
+    const processingSteps = document.getElementById('processingSteps');
+    const estimatedTimeContainer = document.getElementById('estimatedTimeContainer');
+    
+    if (!statusDiv || !statusText) {
+        console.error('Status message elements not found');
+        return;
+    }
+    
+    statusText.textContent = message;
+    
+    // Remove d-none class to display the status
+    statusDiv.classList.remove('d-none');
+    
+    // Apply Bootstrap utility classes for different status types
+    statusDiv.className = statusDiv.className.replace(/bg-\w+-\d+/g, ''); // Remove any existing bg-* classes
+    
+    // Add appropriate Bootstrap background color
+    if (type === 'error') {
+        statusDiv.classList.add('bg-danger', 'text-white');
+    } else if (type === 'success') {
+        statusDiv.classList.add('bg-success', 'text-white');
+    } else {
+        statusDiv.classList.add('bg-primary', 'text-white');
+    }
+    
+    // Show/hide processing UI elements
+    if (showProcessingUI) {
+        if (spinnerContainer) spinnerContainer.classList.remove('d-none');
+        if (processingSteps) processingSteps.classList.remove('d-none');
+        if (estimatedTimeContainer) estimatedTimeContainer.classList.remove('d-none');
+    } else {
+        if (spinnerContainer) spinnerContainer.classList.add('d-none');
+        if (processingSteps) processingSteps.classList.add('d-none');
+        if (estimatedTimeContainer) estimatedTimeContainer.classList.add('d-none');
+    }
+}
+
+/**
+ * Display the results in the UI
+ */
+function displayResults(data) {
+    // Show results section
+    const resultsSection = document.getElementById('results');
+    resultsSection.classList.remove('d-none');
+    
+    // Show feedback section
+    const feedbackSection = document.getElementById('feedbackSection');
+    feedbackSection.classList.remove('d-none');
+    
+    // Store the result ID for later use when saving feedback
+    // Create hidden input if it doesn't exist
+    let resultIdInput = document.getElementById('resultId');
+    if (!resultIdInput) {
+        resultIdInput = document.createElement('input');
+        resultIdInput.type = 'hidden';
+        resultIdInput.id = 'resultId';
+        feedbackSection.appendChild(resultIdInput);
+    }
+    resultIdInput.value = data.saved_to_db ? data.saved_to_db : '';
+    
+    // Display raw text
+    const rawTextElement = document.getElementById('rawText');
+    if (rawTextElement) {
+        rawTextElement.textContent = data.raw_text || '';
+    }
+    
+    // Display Arabic text
+    const arabicTextElement = document.getElementById('arabicText');
+    if (arabicTextElement) {
+        arabicTextElement.innerHTML = (data.arabic_text || '').replace(/\n/g, '<br>');
+    }
+    
+    // Display translation text
+    const translationTextElement = document.getElementById('translationText');
+    if (translationTextElement) {
+        translationTextElement.innerHTML = (data.translation_text || '').replace(/\n/g, '<br>');
     }
 
-    /**
-     * Display the results
-     */
-    function displayResults(data) {
-        // Show results section
-        document.getElementById('results').classList.remove('hidden');
-        
-        // Show feedback section
-        document.getElementById('feedbackSection').classList.remove('hidden');
-        
-        // Store the result ID for later use when saving feedback
-        // Create hidden input if it doesn't exist
-        let resultIdInput = document.getElementById('resultId');
-        if (!resultIdInput) {
-            resultIdInput = document.createElement('input');
-            resultIdInput.type = 'hidden';
-            resultIdInput.id = 'resultId';
-            document.getElementById('feedbackSection').appendChild(resultIdInput);
-        }
-        resultIdInput.value = data.saved_to_db ? data.saved_to_db : '';
-        
-        // Display raw text
-        document.getElementById('rawText').textContent = data.raw_text || '';
-        
-        // Display Arabic text
-        document.getElementById('arabicText').textContent = data.arabic_text || '';
-        
-        // Display translation text
-        document.getElementById('translationText').textContent = data.translation_text || '';
-
-        // Display reasoning text
-        document.getElementById('reasoningText').textContent = data.reasoning || '';
-        
-         // Display JSON data in table
-         const tableBody = document.querySelector('#jsonTable tbody');
-         tableBody.innerHTML = ''; // Clear existing content
-         
-         if (data.json_data && typeof data.json_data === 'object') {
-             Object.entries(data.json_data).forEach(([key, value]) => {
-                 const row = document.createElement('tr');
-                 row.innerHTML = `
-                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${key}</td>
-                     <td class="px-6 py-4 whitespace-normal text-sm text-gray-500">${formatValue(value)}</td>
-                 `;
-                 tableBody.appendChild(row);
-             });
-         }
-     }
-
-     /**
-     * Format any value type for display in results table
-     */
-    function formatValue(value) {
-        if (value === null || value === undefined) {
-            return '-';
-        }
-        if (Array.isArray(value)) {
-            return value.join(', ');
-        }
-        if (typeof value === 'object') {
-            return Object.entries(value)
-                .map(([k, v]) => `${k}: ${formatValue(v)}`)
-                .join(', ');
-        }
-        return String(value);
+    // Display reasoning text
+    const reasoningTextElement = document.getElementById('reasoningText');
+    if (reasoningTextElement) {
+        reasoningTextElement.textContent = data.reasoning || '';
     }
+    
+    // Display JSON data in table
+    const tableBody = document.querySelector('#jsonTable tbody');
+    if (tableBody) {
+        tableBody.innerHTML = ''; // Clear existing content
+        
+        if (data.json_data && typeof data.json_data === 'object') {
+            Object.entries(data.json_data).forEach(([key, value]) => {
+                const row = document.createElement('tr');
+                
+                // Use Bootstrap table classes
+                const keyCell = document.createElement('td');
+                keyCell.className = 'fw-medium';
+                keyCell.textContent = key;
+                
+                const valueCell = document.createElement('td');
+                valueCell.textContent = formatValue(value);
+                
+                row.appendChild(keyCell);
+                row.appendChild(valueCell);
+                tableBody.appendChild(row);
+            });
+        }
+    }
+    
+    // Ensure tabs are working after populating content
+    const resultsTabs = document.getElementById('resultsTabs');
+    if (resultsTabs) {
+        // Force initialization of Bootstrap tabs if needed
+        const tabElements = resultsTabs.querySelectorAll('[data-bs-toggle="tab"]');
+        tabElements.forEach(tab => {
+            // Make sure first tab is active
+            if (tab.id === 'transcription-tab') {
+                tab.classList.add('active');
+            }
+        });
+
+        // Show first tab content
+        document.getElementById('transcription').classList.add('show', 'active');
+    }
+}
+
+/**
+ * Format any value type for display in results table
+ */
+function formatValue(value) {
+    if (value === null || value === undefined) {
+        return '-';
+    }
+    if (Array.isArray(value)) {
+        return value.join(', ');
+    }
+    if (typeof value === 'object') {
+        return Object.entries(value)
+            .map(([k, v]) => `${k}: ${formatValue(v)}`)
+            .join(', ');
+    }
+    return String(value);
+}
 
     // Form events
     formSelector.addEventListener('change', function() {
@@ -995,40 +1076,85 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Define the toast notification function if it doesn't exist
-    function showToastNotification(message, type) {
-        // Check if a custom toast function already exists
-        if (window.showToastNotification) {
-            window.showToastNotification(message, type);
-            return;
-        }
-        
-        // Create a simple toast implementation if none exists
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.style.position = 'fixed';
-        toast.style.bottom = '20px';
-        toast.style.right = '20px';
-        toast.style.padding = '10px 20px';
-        toast.style.borderRadius = '4px';
-        toast.style.zIndex = '9999';
-        
-        if (type === 'success') {
-            toast.style.backgroundColor = '#4CAF50';
-            toast.style.color = 'white';
-        } else if (type === 'error') {
-            toast.style.backgroundColor = '#F44336';
-            toast.style.color = 'white';
-        }
-        
-        document.body.appendChild(toast);
-        
-        // Remove the toast after 3 seconds
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+    /**
+ * Show a Bootstrap toast notification
+ */
+function showToastNotification(message, type = 'info', duration = 3000) {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toastContainer';
+        toastContainer.className = 'position-fixed top-0 end-0 p-3';
+        toastContainer.style.zIndex = '1100';
+        document.body.appendChild(toastContainer);
     }
     
+    // Create unique ID for this toast
+    const toastId = 'toast-' + Date.now();
+    
+    // Determine Bootstrap color class based on type
+    let bgColorClass = 'bg-primary';
+    if (type === 'error') bgColorClass = 'bg-danger';
+    else if (type === 'success') bgColorClass = 'bg-success';
+    else if (type === 'warning') bgColorClass = 'bg-warning';
+    
+    // Create toast HTML structure using Bootstrap 5 toast component
+    const toastHTML = `
+        <div id="${toastId}" class="toast align-items-center ${bgColorClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+    
+    // Add toast to container
+    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+    
+    // Get the toast element
+    const toastElement = document.getElementById(toastId);
+    
+    // Initialize Bootstrap toast
+    if (window.bootstrap && window.bootstrap.Toast) {
+        const toast = new window.bootstrap.Toast(toastElement, {
+            autohide: true,
+            delay: duration
+        });
+        
+        // Show the toast
+        toast.show();
+        
+        // Remove toast from DOM after it's hidden
+        toastElement.addEventListener('hidden.bs.toast', function() {
+            if (toastElement.parentNode === toastContainer) {
+                toastContainer.removeChild(toastElement);
+            }
+            
+            // Remove container if empty
+            if (toastContainer.children.length === 0) {
+                document.body.removeChild(toastContainer);
+            }
+        });
+    } else {
+        // Fallback if Bootstrap JS is not available
+        toastElement.style.display = 'block';
+        
+        setTimeout(() => {
+            if (toastElement.parentNode === toastContainer) {
+                toastContainer.removeChild(toastElement);
+            }
+            
+            // Remove container if empty
+            if (toastContainer.children.length === 0 && toastContainer.parentNode) {
+                document.body.removeChild(toastContainer);
+            }
+        }, duration);
+    }
+}
+
     // Add click event listener to the save feedback button
     saveFeedbackButton.addEventListener('click', async function() {
         const feedbackInput = document.getElementById('resultFeedback');

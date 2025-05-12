@@ -193,4 +193,4 @@ async def get_results(limit: int = 100):
 
 if __name__ == "__main__":
     logger.info(f"Starting FastAPI server on port {8587}")
-    uvicorn.run("app:app", host="0.0.0.0", port=8587, reload=Config.DEBUG)
+    uvicorn.run("app:app", host="0.0.0.0", port=8588, reload=Config.DEBUG)
