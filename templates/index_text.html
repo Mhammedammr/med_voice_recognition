@@ -279,4 +279,22 @@
     <!-- App JavaScript -->
     <script src="{{ url_for('static', path='js/test.js') }}"></script>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch("/get_forms")
+            .then(response => response.json())
+            .then(data => {
+                const selector = document.getElementById("formSelector");
+                data.forEach(form => {
+                    const option = document.createElement("option");
+                    option.value = form;
+                    option.textContent = form;
+                    selector.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching form names:", error);
+            });
+    });
+    </script>
 </html>

@@ -56,6 +56,13 @@ async def index(request: Request):
     logger.info("Serving index page")
     return templates.TemplateResponse("index_text.html", {"request": request})
 
+
+@app.get('/get_forms')
+async def get_forms():
+    df = load_forms_dataframe()
+    form_names = df['name'].dropna().unique().tolist()
+    return JSONResponse(form_names)
+
 # Modify the existing upload endpoint to not require feedback initially
 @app.post("/upload")
 async def upload(
