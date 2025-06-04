@@ -1,8 +1,8 @@
 # src/services/audio_service.py - Core audio processing logic
-from src.services.speech_service import SpeechService
-from src.services.llm_service import LLMService
-from src.services.audio_preprocessing import AudioPreprocessingService
-from src.utils.text_parser import parse_refined_text_voice2
+from .speech_service import SpeechService
+from .llm_service import LLMService
+from .audio_preprocessing import AudioPreprocessingService
+from ..utils.text_parser import parse_refined_text_voice2
 import logging
 import time
 import os

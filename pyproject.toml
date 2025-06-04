@@ -3,7 +3,7 @@ requires= ["setuptools>=42.0", "wheel"]
 build-backend= "setuptools.build_meta"
 
 [project]
-name = "src"
+name = "voiceRecognition"
 version = "0.0.1"
 description = "A quick flask demo to medical voice recognition project"
 readme = "README.md"
@@ -30,11 +30,15 @@ dependencies = [
     "uuid==1.30",
     "sqlalchemy==2.0.38",
     "psycopg2-binary==2.9.10",
-    "pyarrow==19.0.1"
+    "pyarrow==19.0.1",
+    "pydub==0.25.1",
+    "librosa==0.11.0",
+    "fastapi==0.115.12",
+    "uvicorn==0.34.3"
 ]
 
 [project.optional-dependencies]
-testing = [
+dev = [
     "pytest==8.3.4",
     "Sphinx==8.1.3",
     "sphinx-rtd-theme==3.0.2",
@@ -46,11 +50,10 @@ testing = [
     "black==24.10.0",
     "pytest-mock==3.14.0",
     "pytest-watcher==0.4.3",
-    "autopep8==2.3.1"
 ]
 
 [tool.pytest.ini_options]
-addopts = "--cov=insight"
+addopts = "--cov=voiceRecognition"
 testpaths = [
     "test",
 ]

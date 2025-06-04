@@ -1,6 +1,18 @@
 import fireworks.client
 import logging
-from src.utils.prompt import *
+from ..utils.prompt import (get_refine_arabic_prompt_llama,
+                            get_refine_english_prompt_deepseek_conv,
+                            get_refine_english_prompt_deepseek,
+                            get_refine_arabic_prompt_deepseek_conv,
+                            get_refine_arabic_prompt_deepseek,
+                            get_translation_prompt_deepseek_conv,
+                            get_translation_prompt_deepseek,
+                            get_extraction_prompt_llama,
+                            get_refine_english_prompt_llama_conv,
+                            get_refine_english_prompt_llama,
+                            get_refine_arabic_prompt_llama_conv,
+                            get_translation_prompt_llama_conv,
+                            get_translation_prompt_llama)
 
 # Configure logger
 logging.basicConfig(level=logging.INFO)

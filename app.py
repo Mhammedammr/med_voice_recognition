@@ -13,7 +13,7 @@ from datetime import datetime
 
 # Import your services
 from config import Config
-from src.services.audio_service import AudioService
+from voiceRecognition.services.audio_service import AudioService
 from database import DatabaseService
 
 # Initialize logger
